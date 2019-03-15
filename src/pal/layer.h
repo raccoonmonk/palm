@@ -36,6 +36,7 @@
 
 #include <fstream>
 #include <mutex>
+#include <vector>
 #include <unordered_map>
 
 #include "pal.h"
@@ -121,7 +122,7 @@ namespace pal
       std::unordered_map<FeatureId, Feature*> *hashtable;
 
       HashTable< LinkedList<FeaturePart*>* > * connectedHashtable;
-      LinkedList< char* >* connectedTexts;
+      std::vector<char*>* connectedTexts;
 
 	  std::mutex *modMutex;
 
