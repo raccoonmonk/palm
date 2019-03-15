@@ -1,15 +1,10 @@
-
 TEMPLATE = lib
 TARGET = pal
 CONFIG += c++11
 CONFIG += shared
 CONFIG -= qt
 LIBS += -lgeos_c
-!android {
-LIBS += -lpthread
-}
 
-DEFINES +=_HAVE_PTHREAD_
 HEADERS += \
     src/pal/costcalculator.h \
     src/pal/feature.h \
