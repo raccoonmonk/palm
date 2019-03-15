@@ -37,6 +37,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <vector>
 
 #include <geos_c.h>
 
@@ -54,28 +55,24 @@ namespace pal
   class  LabelInfo
   {
     public:
-      typedef struct
-      {
+      struct CharacterInfo {
         unsigned short chr;
         double width;
-      } CharacterInfo;
+      };
 
       LabelInfo( int num, double height, double maxinangle = 20.0, double maxoutangle = -20.0 )
-      {
-        max_char_angle_inside = maxinangle;
-        // outside angle should be negative
-        max_char_angle_outside = maxoutangle > 0 ? -maxoutangle : maxoutangle;
-        label_height = height;
-        char_num = num;
-        char_info = new CharacterInfo[num];
-      }
-      ~LabelInfo() { delete [] char_info; }
+          : max_char_angle_inside(maxinangle)
+          , max_char_angle_outside(maxoutangle)
+          , label_height(height)
+          , char_info(num)
+      { }
+
+      int char_num() const { return char_info.size(); }
 
       double max_char_angle_inside;
       double max_char_angle_outside;
       double label_height;
-      int char_num;
-      CharacterInfo* char_info;
+      std::vector<CharacterInfo> char_info;
   };
 
   class LabelPosition;

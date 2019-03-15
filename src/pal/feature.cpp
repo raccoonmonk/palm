@@ -754,12 +754,12 @@ namespace pal
 
     int upside_down_char_count = 0; // Count of characters that are placed upside down.
 
-    for ( int i = 0; i < f->labelInfo->char_num; i++ )
+    for ( int i = 0; i < f->labelInfo->char_num(); i++ )
     {
       double last_character_angle = angle;
 
       // grab the next character according to the orientation
-      LabelInfo::CharacterInfo& ci = ( orientation > 0 ? f->labelInfo->char_info[i] : f->labelInfo->char_info[f->labelInfo->char_num-i-1] );
+      LabelInfo::CharacterInfo& ci = ( orientation > 0 ? f->labelInfo->char_info[i] : f->labelInfo->char_info[f->labelInfo->char_num()-i-1] );
 
       // Coordinates this character will start at
       if ( segment_length == 0 )
@@ -854,7 +854,7 @@ namespace pal
 
       //std::cerr << "adding part: " << render_x << "  " << render_y << std::endl;
       LabelPosition* tmp = new LabelPosition( 0, render_x /*- xBase*/, render_y /*- yBase*/, ci.width, string_height, -render_angle, 0.0001, this );
-      tmp->setPartId( orientation > 0 ? i : f->labelInfo->char_num - i - 1 );
+      tmp->setPartId( orientation > 0 ? i : f->labelInfo->char_num() - i - 1 );
       if ( slp == NULL )
         slp = tmp;
       else
@@ -874,7 +874,7 @@ namespace pal
     // END FOR
 
     // If we placed too many characters upside down
-    if ( upside_down_char_count >= f->labelInfo->char_num / 2.0 )
+    if ( upside_down_char_count >= f->labelInfo->char_num() / 2.0 )
     {
       // if we auto-detected the orientation then retry with the opposite orientation
       if ( !orientation_forced )
@@ -905,7 +905,7 @@ namespace pal
   int FeaturePart::setPositionForLineCurved( LabelPosition ***lPos, PointSet* mapShape )
   {
     // label info must be present
-    if ( f->labelInfo == NULL || f->labelInfo->char_num == 0 )
+    if ( f->labelInfo == NULL || f->labelInfo->char_num() == 0 )
       return 0;
 
     // distance calculation
@@ -964,7 +964,7 @@ namespace pal
           tmp = tmp->getNextPart();
         }
 
-        double angle_diff_avg = f->labelInfo->char_num > 1 ? ( angle_diff / ( f->labelInfo->char_num - 1 ) ) : 0; // <0, pi> but pi/8 is much already
+        double angle_diff_avg = f->labelInfo->char_num() > 1 ? ( angle_diff / ( f->labelInfo->char_num() - 1 ) ) : 0; // <0, pi> but pi/8 is much already
         double cost = angle_diff_avg / 100; // <0, 0.031 > but usually <0, 0.003 >
         if ( cost < 0.0001 ) cost = 0.0001;
 
@@ -977,7 +977,7 @@ namespace pal
 
 
         // average angle is calculated with respect to periodicity of angles
-        double angle_avg = atan2( sin_avg / f->labelInfo->char_num, cos_avg / f->labelInfo->char_num );
+        double angle_avg = atan2( sin_avg / f->labelInfo->char_num(), cos_avg / f->labelInfo->char_num() );
         // displacement
         if ( flags & FLAG_ABOVE_LINE )
           positions->push_back( _createCurvedCandidate( slp, angle_avg, f->distlabel ) );
