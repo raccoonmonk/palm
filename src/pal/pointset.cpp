@@ -195,7 +195,7 @@ namespace pal
 
   void PointSet::splitPolygons( LinkedList<PointSet*> *shapes_toProcess,
                                 LinkedList<PointSet*> *shapes_final,
-                                double xrm, double yrm , char *uid )
+                                double xrm, double yrm , FeatureId uid )
   {
     int i, j;
 

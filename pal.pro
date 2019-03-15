@@ -27,7 +27,8 @@ HEADERS += \
     src/pal/priorityqueue.h \
     src/pal/problem.h \
     src/pal/rtree.hpp \
-    src/pal/util.h
+    src/pal/util.h \
+    src/pal/feature_id.h
 
 SOURCES += \
     src/pal/costcalculator.cpp \

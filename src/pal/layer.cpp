@@ -71,7 +71,7 @@ namespace pal
 	modMutex = new std::mutex();
 
     rtree = new RTree<FeaturePart*, double, 2, double>();
-    hashtable = new HashTable<Feature*> ( 5281 );
+    hashtable = new std::unordered_map<FeatureId, Feature*>();
 
     connectedHashtable = new HashTable< LinkedList<FeaturePart*>* > ( 5391 );
     connectedTexts = new LinkedList< char* >( strCompare );
@@ -123,10 +123,10 @@ namespace pal
     delete modMutex;
   }
 
-  Feature* Layer::getFeature( const char* geom_id )
+  Feature* Layer::getFeature(FeatureId id)
   {
-    Feature** fptr = hashtable->find( geom_id );
-    return ( fptr ? *fptr : NULL );
+    auto findIter = hashtable->find(id);
+    return (findIter != hashtable->end()) ? findIter->second : nullptr;
   }
 
 
@@ -226,16 +226,16 @@ namespace pal
 
 
 
-  bool Layer::registerFeature( const char *geom_id, PalGeometry *userGeom, double label_x, double label_y, const char* labelText,
+  bool Layer::registerFeature( FeatureId geom_id, PalGeometry *userGeom, double label_x, double label_y, const char* labelText,
                                double labelPosX, double labelPosY, bool fixedPos, double angle, bool fixedAngle,
                                int xQuadOffset, int yQuadOffset, double xOffset, double yOffset, bool alwaysShow )
   {
-    if ( !geom_id || label_x < 0 || label_y < 0 )
+    if ( label_x < 0 || label_y < 0 )
       return false;
 
     modMutex->lock();
 
-    if ( hashtable->find( geom_id ) )
+    if ( hashtable->find(geom_id) != hashtable->end() )
     {
       modMutex->unlock();
       //A feature with this id already exists. Don't throw an exception as sometimes,
@@ -363,7 +363,7 @@ namespace pal
     if ( !first_feat )
     {
       features->push_back( f );
-      hashtable->insertItem( geom_id, f );
+      hashtable->insert( {geom_id, f} );
     }
     else
     {

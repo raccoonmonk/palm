@@ -42,6 +42,7 @@
 
 #include "rtree.hpp"
 #include "linkedlist.hpp"
+#include "feature_id.h"
 
 namespace pal
 {
@@ -137,9 +138,9 @@ namespace pal
        * split a concave shape into several convex shapes
        *
        */
-      static void splitPolygons( LinkedList<PointSet*> *shapes_toProcess,
+      static void splitPolygons(LinkedList<PointSet*> *shapes_toProcess,
                                  LinkedList<PointSet*> *shapes_final,
-                                 double xrm, double yrm, char *uid );
+                                 double xrm, double yrm, FeatureId uid );
 
 
 

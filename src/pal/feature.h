@@ -43,12 +43,14 @@
 #include "palgeometry.h"
 
 #include "pointset.h"
+#include "feature_id.h"
 #include "util.h"
 
 
 namespace pal
 {
   /** optional additional info about label (for curved labels) */
+  using FeatureId = uint32_t;
   class  LabelInfo
   {
     public:
@@ -84,7 +86,7 @@ namespace pal
       friend class FeaturePart;
 
     public:
-      Feature( Layer* l, const char* id, PalGeometry* userG, double lx, double ly );
+      Feature( Layer* l, FeatureId id, PalGeometry* userG, double lx, double ly );
       ~Feature();
 
       void setLabelInfo( LabelInfo* info ) { labelInfo = info; }
@@ -106,7 +108,7 @@ namespace pal
       double distlabel;
       LabelInfo* labelInfo; // optional
 
-      char *uid;
+      FeatureId uid;
 
       bool fixedPos; //true in case of fixed position (only 1 candidate position with cost 0)
       double fixedPosX;
@@ -263,7 +265,7 @@ namespace pal
        * \brief get the unique id of the feature
        * \return the feature unique identifier
        */
-      const char *getUID();
+      pal::FeatureId getUID();
 
 
       /**
