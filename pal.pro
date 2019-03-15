@@ -1,9 +1,8 @@
 
 TEMPLATE = lib
 TARGET = pal
-unix:CONFIG += c++11
-win32:CONFIG += -std=gnu++0x
-CONFIG += dll
+CONFIG += c++11
+CONFIG += shared
 LIBS += -lgeos_c
 !android {
 LIBS += -lpthread
@@ -27,7 +26,6 @@ HEADERS += \
     src/pal/priorityqueue.h \
     src/pal/problem.h \
     src/pal/rtree.hpp \
-    src/pal/simplemutex.h \
     src/pal/util.h
 
 SOURCES += \

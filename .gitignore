@@ -12,3 +12,5 @@ install-sh
 ltmain.sh
 missing
 src/jpal/Makefile
+.qmake.stash
+pal.pro.user

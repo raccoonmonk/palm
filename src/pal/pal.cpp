@@ -63,7 +63,6 @@
 #include "labelposition.h"
 #include "problem.h"
 #include "pointset.h"
-#include "simplemutex.h"
 #include "util.h"
 
 namespace pal
@@ -90,7 +89,7 @@ namespace pal
 
     layers = new QList<Layer*>();
 
-    lyrsMutex = new SimpleMutex();
+	lyrsMutex = new std::mutex();
 
     ejChainDeg = 50;
     tenure = 10;

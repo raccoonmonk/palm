@@ -35,6 +35,7 @@
 #define _LAYER_H_
 
 #include <fstream>
+#include <mutex>
 
 #include "pal.h"
 #include "palgeometry.h"
@@ -52,7 +53,6 @@ namespace pal
   class Feature;
   class FeaturePart;
   class Pal;
-  class SimpleMutex;
   class LabelInfo;
 
   /**
@@ -122,7 +122,7 @@ namespace pal
       HashTable< LinkedList<FeaturePart*>* > * connectedHashtable;
       LinkedList< char* >* connectedTexts;
 
-      SimpleMutex *modMutex;
+	  std::mutex *modMutex;
 
       /**
        * \brief Create a new layer

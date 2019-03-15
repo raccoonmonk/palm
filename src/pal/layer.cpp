@@ -43,7 +43,6 @@
 #include <cstring>
 #include <cmath>
 
-
 #include "pal.h"
 #include "layer.h"
 #include "palexception.h"
@@ -55,8 +54,6 @@
 #include "feature.h"
 #include "geomfunction.h"
 #include "util.h"
-
-#include "simplemutex.h"
 
 namespace pal
 {
@@ -71,7 +68,7 @@ namespace pal
     this->name = new char[strlen( lyrName ) +1];
     strcpy( this->name, lyrName );
 
-    modMutex = new SimpleMutex();
+	modMutex = new std::mutex();
 
     rtree = new RTree<FeaturePart*, double, 2, double>();
     hashtable = new HashTable<Feature*> ( 5281 );

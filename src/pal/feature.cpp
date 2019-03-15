@@ -52,7 +52,6 @@
 #include "geomfunction.h"
 #include "labelposition.h"
 #include "pointset.h"
-#include "simplemutex.h"
 #include "util.h"
 
 #ifndef M_PI
