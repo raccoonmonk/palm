@@ -36,7 +36,6 @@
 
 //#define _VERBOSE_
 //#define _EXPORT_MAP_
-#include <QTime>
 
 #define _CRT_SECURE_NO_DEPRECATE
 
@@ -87,9 +86,9 @@ namespace pal
     // do not init and exit GEOS - we do it inside QGIS
     //initGEOS( geosNotice, geosError );
 
-    layers = new QList<Layer*>();
+    layers = new std::list<Layer*>();
 
-	lyrsMutex = new std::mutex();
+    lyrsMutex = new std::mutex();
 
     ejChainDeg = 50;
     tenure = 10;
@@ -118,7 +117,7 @@ namespace pal
 
   }
 
-  QList<Layer*> *Pal::getLayers()
+  std::list<Layer*>* Pal::getLayers()
   {
     // TODO make const ! or whatever else
     return layers;
@@ -127,7 +126,7 @@ namespace pal
   Layer *Pal::getLayer( const char *lyrName )
   {
     lyrsMutex->lock();
-    for ( QList<Layer*>::iterator it = layers->begin(); it != layers->end(); it++ )
+    for (auto it = layers->begin(); it != layers->end(); it++)
       if ( strcmp(( *it )->name, lyrName ) == 0 )
       {
         lyrsMutex->unlock();
@@ -144,7 +143,7 @@ namespace pal
     lyrsMutex->lock();
     if ( layer )
     {
-      layers->removeOne( layer );
+      layers->remove( layer );
       delete layer;
     }
     lyrsMutex->unlock();
@@ -179,7 +178,7 @@ namespace pal
     std::cout << "lyrName:" << lyrName << std::endl;
     std::cout << "nbLayers:" << layers->size() << std::endl;
 #endif
-    for ( QList<Layer*>::iterator it = layers->begin(); it != layers->end(); it++ )
+    for ( auto it = layers->begin(); it != layers->end(); it++ )
     {
       if ( strcmp(( *it )->name, lyrName ) == 0 )   // if layer already known
       {
@@ -344,7 +343,6 @@ namespace pal
   */
   Problem* Pal::extract( int nbLayers, char **layersName, double *layersFactor, double lambda_min, double phi_min, double lambda_max, double phi_max, double scale, std::ofstream *svgmap )
   {
-    Q_UNUSED( svgmap );
     // to store obstacles
     RTree<PointSet*, double, 2, double> *obstacles = new RTree<PointSet*, double, 2, double>();
 
@@ -402,12 +400,12 @@ namespace pal
     int oldNbft = 0;
     Layer *layer;
 
-    QList<char*> *labLayers = new QList<char*>();
+    std::list<char*> *labLayers = new std::list<char*>();
 
     lyrsMutex->lock();
     for ( i = 0; i < nbLayers; i++ )
     {
-      for ( QList<Layer*>::iterator it = layers->begin(); it != layers->end(); it++ ) // iterate on pal->layers
+        for ( auto it = layers->begin(); it != layers->end(); it++ ) // iterate on pal->layers
       {
         layer = *it;
         // Only select those who are active and labellable (with scale constraint) or those who are active and which must be treated as obstaclewhich must be treated as obstacle
@@ -642,7 +640,7 @@ namespace pal
     double *priorities = new double[nbLayers];
     Layer *layer;
     i = 0;
-    for ( QList<Layer*>::iterator it = layers->begin(); it != layers->end(); it++ )
+    for ( auto it = layers->begin(); it != layers->end(); it++ )
     {
       layer = *it;
       layersName[i] = layer->name;
@@ -700,9 +698,6 @@ namespace pal
     << "height=\"" << convert2pt( bbox[3] - bbox[1], scale, dpi )  << "\">" << std::endl; // TODO xmax ymax
 #endif
 
-    QTime t;
-    t.start();
-
     // First, extract the problem
     // TODO which is the minimum scale ? (> 0, >= 0, >= 1, >1 )
     if ( scale < 1 || ( prob = extract( nbLayers, layersName, layersFactor, bbox[0], bbox[1], bbox[2], bbox[3], scale,
@@ -732,9 +727,6 @@ namespace pal
       return new std::list<LabelPosition*>();
     }
 
-    std::cout << "PAL EXTRACT: " << t.elapsed() / 1000.0 << " s" << std::endl;
-    t.restart();
-
     // reduce number of candidates
     // (remove candidates which surely won't be used)
     prob->reduce();
@@ -761,9 +753,6 @@ namespace pal
       prob->chain_search();
     else
       prob->popmusic();
-
-    std::cout << "PAL SEARCH (" << searchMethod << "): " << t.elapsed() / 1000.0 << " s" << std::endl;
-    t.restart();
 
     // Post-Optimization
     //prob->post_optimization();
@@ -807,7 +796,7 @@ namespace pal
     double *priorities = new double[nbLayers];
     Layer *layer;
     int i = 0;
-    for ( QList<Layer*>::iterator it = layers->begin(); it != layers->end(); it++ )
+    for ( auto it = layers->begin(); it != layers->end(); it++ )
     {
       layer = *it;
       layersName[i] = layer->name;

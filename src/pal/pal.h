@@ -34,8 +34,7 @@
 #ifndef _PAL_H
 #define _PAL_H
 
-
-#include <QList>
+#include <list>
 #include <iostream>
 #include <ctime>
 #include <mutex>
@@ -127,7 +126,7 @@ namespace pal
       friend class FeaturePart;
       friend class Layer;
     private:
-      QList<Layer*> *layers;
+	  std::list<Layer*> *layers;
 
 	  std::mutex *lyrsMutex;
 
@@ -287,12 +286,12 @@ namespace pal
        */
       Layer *getLayer( const char *lyrName );
 
-      /**
-       * \brief get all layers
-       *
-       * @return a list of all layers
-       */
-      QList<Layer*> *getLayers();
+	  /**
+	   * \brief get all layers
+	   *
+	   * @return a list of all layers
+	   */
+	  std::list<Layer*> *getLayers();
 
       /**
        * \brief remove a layer
