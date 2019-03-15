@@ -49,7 +49,6 @@ namespace pal
 
   class Pal;
   class Feature;
-  class Projection;
   class LabelPosition;
 
   typedef struct _cross
@@ -63,8 +62,6 @@ namespace pal
     int way;
 
   } Crossing;
-
-  class PointSet;
 
   typedef struct _cHullBox
   {

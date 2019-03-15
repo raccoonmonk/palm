@@ -249,14 +249,14 @@ namespace pal
        * \param bbox_max max values of the map extent
        * \param mapShape generate candidates for this spatial entites
        * \param candidates index for candidates
-       * \param svgmap svg map file
        * \return the number of candidates in *lPos
        */
-      int setPosition( double scale, LabelPosition ***lPos, double bbox_min[2], double bbox_max[2], PointSet *mapShape, RTree<LabelPosition*, double, 2, double>*candidates
-#ifdef _EXPORT_MAP_
-                       , std::ofstream &svgmap
-#endif
-                     );
+      int setPosition(double scale,
+                      LabelPosition*** lPos,
+                      double bbox_min[2],
+                      double bbox_max[2],
+                      PointSet* mapShape,
+                      RTree<LabelPosition*, double, 2, double>* candidates);
 
       /**
        * \brief get the unique id of the feature
