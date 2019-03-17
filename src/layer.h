@@ -34,6 +34,7 @@
 #include <mutex>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 #include "pal.h"
 #include "palgeometry.h"
@@ -289,7 +290,7 @@ class  Layer {
       LinkedList<FeaturePart*> *featureParts;
 
       /** list of features - for deletion */
-      LinkedList<Feature*> *features;
+      std::vector<std::unique_ptr<Feature>> features;
 
       Pal *pal;
 

@@ -77,7 +77,6 @@ namespace pal
       this->defaultPriority = defaultPriority;
 
     featureParts = new LinkedList<FeaturePart*> ( ptrFeaturePartCompare );
-    features = new LinkedList<Feature*> ( ptrFeatureCompare );
   }
 
   Layer::~Layer()
@@ -98,14 +97,7 @@ namespace pal
     delete connectedHashtable;
 
     // features in the hashtable
-    if ( features )
-    {
-      while ( features->size() )
-      {
-        delete features->pop_front();
-      }
-      delete features;
-    }
+    features.clear();
 
     if ( name )
       delete[] name;
@@ -131,7 +123,7 @@ namespace pal
 
   int Layer::getNbFeatures()
   {
-    return features->size();
+    return features.size();
   }
 
   const char *Layer::getName()
@@ -238,7 +230,7 @@ namespace pal
     // Split MULTI GEOM and Collection in simple geometries
     const GEOSGeometry *the_geom = userGeom->getGeosGeometry();
 
-    Feature* f = new Feature( this, geom_id, userGeom, label_x, label_y );
+    auto f = std::unique_ptr<Feature>(new Feature( this, geom_id, userGeom, label_x, label_y ));
     if ( fixedPos )
     {
       f->setFixedPosition( labelPosX, labelPosY );
@@ -295,7 +287,7 @@ namespace pal
         throw InternalException::UnknownGeometry();
       }
 
-      FeaturePart* fpart = new FeaturePart( f, geom );
+      FeaturePart* fpart = new FeaturePart( f.get(), geom );
 
       // ignore invalid geometries
       if (( type == GEOS_LINESTRING && fpart->nbPoints < 2 ) ||
@@ -352,14 +344,9 @@ namespace pal
     }
 
     // add feature to layer if we have added something
-    if ( !first_feat )
-    {
-      features->push_back( f );
-      hashtable->insert( {geom_id, f} );
-    }
-    else
-    {
-      delete f;
+    if (!first_feat) {
+      features.push_back(std::move(f));
+      hashtable->insert( {geom_id, f.get()} );
     }
 
     return !first_feat; // true if we've added something
