@@ -211,23 +211,10 @@ namespace pal
 
 
       /**
-       * \brief return the feature id
-       * \return the feature id
-       */
-      //int getId();
-
-      /**
        * \brief return the layer that feature belongs to
        * \return the layer of the feature
        */
       Layer * getLayer();
-
-      /**
-       * \brief save the feature into file
-       * Called by Pal::save()
-       * \param file the file to write
-       */
-      //void save(std::ofstream *file);
 
       /**
        * \brief generic method to generate candidates

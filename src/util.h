@@ -32,7 +32,6 @@
 
 #include <cmath>
 #include <cstring>
-#include <stddef.h>
 #include <geos_c.h>
 
 #include "pal.h"
@@ -42,7 +41,6 @@
 
 namespace pal
 {
-
   class LabelPosition;
   class Layer;
   class FeaturePart;
@@ -158,10 +156,6 @@ namespace pal
    * \param greater function to compare two items
    **/
   void sort( void** items, int N, bool ( *greater )( void *l, void *r ) );
-
-  void tabcpy( int n, const int* const x, const int* const y,
-               const double* const prob, int *cx, int *cy, double *p );
-
 
 } // namespace
 
