@@ -100,8 +100,6 @@ namespace pal
 
     showPartial = true;
 
-    this->map_unit = pal::METER;
-
     std::cout.precision( 12 );
     std::cerr.precision( 12 );
 
@@ -136,7 +134,7 @@ Pal::~Pal() {
 }
 
 
-  Layer * Pal::addLayer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, Units label_unit, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll )
+  Layer * Pal::addLayer(const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll )
   {
     std::lock_guard<std::mutex> guard(lyrsMutex);
 
@@ -152,7 +150,7 @@ Pal::~Pal() {
         return layer.get();
       }
     }
-    Layer * lyr = new Layer( lyrName, min_scale, max_scale, arrangement, label_unit, defaultPriority, obstacle, active, toLabel, this, displayAll );
+    Layer * lyr = new Layer(lyrName, min_scale, max_scale, arrangement, defaultPriority, obstacle, active, toLabel, this, displayAll);
     layers.push_back(std::unique_ptr<Layer>(lyr));
 
     return lyr;
@@ -927,29 +925,6 @@ std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat 
         std::cerr << "Unknown search method..." << std::endl;
     }
   }
-
-
-  /**
-   * \brief get current map unit
-   */
-  Units Pal::getMapUnit()
-  {
-    return map_unit;
-  }
-
-  /**
-   * \brief set map unit
-   */
-  void Pal::setMapUnit( Units map_unit )
-  {
-    if ( map_unit == pal::PIXEL || map_unit == pal::METER
-         || map_unit == pal::FOOT || map_unit == pal::DEGREE )
-    {
-      this->map_unit = map_unit;
-    }
-  }
-
-
 
 } // namespace pal
 

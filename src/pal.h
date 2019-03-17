@@ -55,18 +55,6 @@ namespace pal
   class Problem;
   class PointSet;
 
-  /** Units for label sizes and distlabel */
-  enum _Units
-  {
-    PIXEL = 0, /**< pixel [px]*/
-    METER, /**< meter [m]*/
-    FOOT, /**< foot [ft]*/
-    DEGREE /**< degree [°] */
-  };
-
-  /** Typedef for _Units enumeration */
-  typedef enum _Units Units;
-
   /** Search method to use */
   enum _searchMethod
   {
@@ -122,8 +110,6 @@ namespace pal
     private:
     std::list<std::unique_ptr<Layer>> layers;
     mutable std::mutex lyrsMutex;
-
-      Units map_unit;
 
       /**
        * \brief maximum # candidates for a point
@@ -263,7 +249,7 @@ namespace pal
        *
        * @todo add symbolUnit
        */
-      Layer * addLayer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, Units label_unit, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll = false );
+      Layer * addLayer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll = false );
 
       /**
        * \brief Look for a layer
@@ -397,16 +383,6 @@ namespace pal
        *  \brief get maximum # candidates to generate for polygon features
        */
       int getPolyP();
-
-      /**
-       * \brief get current map unit
-       */
-      Units getMapUnit();
-
-      /**
-       * \brief set map unit
-       */
-      void setMapUnit( Units map_unit );
 
       /**
        * \brief Select the search method to use.

@@ -98,7 +98,7 @@ class  Layer {
        * @param displayAll if true, all features will be labelled even though overlaps occur
        *
        */
-      Layer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, Units label_unit, double defaultPriority, bool obstacle, bool active, bool toLabel, Pal *pal, bool displayAll = false );
+      Layer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, Pal *pal, bool displayAll = false );
 
       /**
        * \brief Delete the layer
@@ -140,17 +140,6 @@ class  Layer {
 
       unsigned long getArrangementFlags() const { return arrangementFlags; }
       void setArrangementFlags( unsigned long flags ) { arrangementFlags = flags; }
-
-      /**
-       * \brief get units for label size
-       */
-      Units getLabelUnit();
-
-      /**
-       * \brief set unit for label size
-       *
-       */
-      void setLabelUnit( Units label_unit );
 
       /**
        * \brief activate or desactivate the layer
@@ -300,8 +289,6 @@ class  Layer {
       bool active;
       bool toLabel;
       bool displayAll;
-
-      Units label_unit;
 
       double min_scale;
       double max_scale;

@@ -333,22 +333,9 @@ namespace pal
     std::cout << "SetPosition (point) : " << layer->name << "/" << uid << std::endl;
 #endif
 
-    int dpi = f->layer->pal->dpi;
-
-
-    double xrm;
-    double yrm;
+    double xrm = f->label_x;
+    double yrm = f->label_y;
     double distlabel = f->distlabel;
-
-    xrm = unit_convert( f->label_x,
-                        f->layer->label_unit,
-                        f->layer->pal->map_unit,
-                        dpi, scale, delta_width );
-
-    yrm = unit_convert( f->label_y,
-                        f->layer->label_unit,
-                        f->layer->pal->map_unit,
-                        dpi, scale, delta_width );
 
     int nbp = f->layer->pal->point_p;
 
@@ -496,21 +483,10 @@ namespace pal
 #ifdef _DEBUG_
     std::cout << "SetPosition (line) : " << layer->name << "/" << uid << std::endl;
 #endif
-    int i;
-    int dpi = f->layer->pal->dpi;
-    double xrm, yrm;
     double distlabel = f->distlabel;
 
-    xrm = unit_convert( f->label_x,
-                        f->layer->label_unit,
-                        f->layer->pal->map_unit,
-                        dpi, scale, delta_width );
-
-    yrm = unit_convert( f->label_y,
-                        f->layer->label_unit,
-                        f->layer->pal->map_unit,
-                        dpi, scale, delta_width );
-
+    double xrm = f->label_x;
+    double yrm = f->label_y;
 
     /*double distlabel = unit_convert( this->distlabel,
                                      pal::PIXEL,
@@ -554,7 +530,7 @@ namespace pal
     ad = new double[nbPoints];
 
     ll = 0.0; // line length
-    for ( i = 0; i < line->nbPoints - 1; i++ )
+    for (int i = 0; i < line->nbPoints - 1; i++)
     {
       if ( i == 0 )
         ad[i] = 0;
@@ -594,7 +570,7 @@ namespace pal
 
     double birdfly;
     double beta;
-    i = 0;
+    int i = 0;
     //for (i=0;i<nbp;i++){
 #ifdef _DEBUG_FULL_
     std::cout << l << " / " << ll - xrm << std::endl;
@@ -1025,20 +1001,8 @@ namespace pal
     int i;
     int j;
 
-    double xrm;
-    double yrm;
-
-    xrm = unit_convert( f->label_x,
-                        f->layer->label_unit,
-                        f->layer->pal->map_unit,
-                        f->layer->pal->dpi, scale, delta_width );
-
-    yrm = unit_convert( f->label_y,
-                        f->layer->label_unit,
-                        f->layer->pal->map_unit,
-                        f->layer->pal->dpi, scale, delta_width );
-
-    //print();
+    double xrm = f->label_x;
+    double yrm = f->label_y;
 
     //LinkedList<PointSet*> *shapes_toCut;
     LinkedList<PointSet*> *shapes_toProcess;
@@ -1048,7 +1012,7 @@ namespace pal
     shapes_toProcess = new LinkedList<PointSet*> ( ptrPSetCompare );
     shapes_final     = new LinkedList<PointSet*> ( ptrPSetCompare );
 
-    mapShape->parent = NULL;
+    mapShape->parent = nullptr;
 
     shapes_toProcess->push_back( mapShape );
 
