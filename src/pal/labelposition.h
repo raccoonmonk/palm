@@ -30,10 +30,6 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #ifndef _LABELPOSITION_H
 #define _LABELPOSITION_H
 
