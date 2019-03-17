@@ -68,7 +68,6 @@ namespace pal
     hashtable = new std::unordered_map<FeatureId, Feature*>();
 
     connectedHashtable = new HashTable< LinkedList<FeaturePart*>* > ( 5391 );
-    connectedTexts = new std::vector<char*>();
 
     if ( defaultPriority < 0.0001 )
       this->defaultPriority = 0.0001;
@@ -389,9 +388,7 @@ namespace pal
         lst = new LinkedList<FeaturePart*>( ptrFeaturePartCompare );
         connectedHashtable->insertItem( labelText, lst );
 
-        char* txt = new char[strlen( labelText ) +1];
-        strcpy( txt, labelText );
-        connectedTexts->push_back(txt);
+        connectedTexts.push_back(labelText);
       }
       else
       {
@@ -434,9 +431,9 @@ namespace pal
   void Layer::joinConnectedFeatures()
   {
     // go through all label texts
-    for (char * labelText : *connectedTexts) {
+    for (const auto & labelText : connectedTexts) {
       //std::cerr << "JOIN: " << labelText << std::endl;
-      LinkedList<FeaturePart*>** partsPtr = connectedHashtable->find( labelText );
+      LinkedList<FeaturePart*>** partsPtr = connectedHashtable->find(labelText.c_str());
       if ( !partsPtr )
         continue; // shouldn't happen
       LinkedList<FeaturePart*>* parts = *partsPtr;
@@ -473,14 +470,12 @@ namespace pal
       // we're done processing feature parts with this particular label text
       delete parts;
       *partsPtr = NULL;
-      delete [] labelText;
     }
 
     // we're done processing connected fetures
     delete connectedHashtable;
     connectedHashtable = NULL;
-    delete connectedTexts;
-    connectedTexts = NULL;
+    connectedTexts.clear();
   }
 
 

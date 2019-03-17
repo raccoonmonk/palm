@@ -318,8 +318,7 @@ class  Layer {
       std::unordered_map<FeatureId, Feature*> *hashtable;
 
       HashTable< LinkedList<FeaturePart*>* > * connectedHashtable;
-      std::vector<char*>* connectedTexts;
-
+    std::vector<std::string> connectedTexts;
     std::mutex modMutex;
 };
 

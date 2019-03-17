@@ -14,5 +14,5 @@ missing
 src/jpal/Makefile
 .qmake.stash
 pal.pro.user
-pall11.pri
+pal11.pri
 
