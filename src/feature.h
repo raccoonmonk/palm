@@ -47,7 +47,6 @@
 namespace pal
 {
   /** optional additional info about label (for curved labels) */
-  using FeatureId = uint32_t;
   class  LabelInfo
   {
     public:
@@ -98,29 +97,23 @@ namespace pal
       PalGeometry *userGeom;
       double label_x;
       double label_y;
-      double distlabel;
-      LabelInfo* labelInfo; // optional
-
+      double distlabel = 0;
+      LabelInfo* labelInfo = nullptr; // optional
       FeatureId uid;
 
-      bool fixedPos; //true in case of fixed position (only 1 candidate position with cost 0)
-      double fixedPosX;
-      double fixedPosY;
-      bool quadOffset; // true if a quadrant offset exists
-      double quadOffsetX;
-      double quadOffsetY;
-      bool offsetPos; //true if position is to be offset by set amount
-      double offsetPosX;
-      double offsetPosY;
+      bool fixedPos = false; //true in case of fixed position (only 1 candidate position with cost 0)
+      double fixedPosX = 0;
+      double fixedPosY = 0;
+      bool quadOffset = false; // true if a quadrant offset exists
+      double quadOffsetX = 0;
+      double quadOffsetY = 0;
+      bool offsetPos = false; //true if position is to be offset by set amount
+      double offsetPosX = 0;
+      double offsetPosY = 0;
       //Fixed (e.g. data defined) angle only makes sense together with fixed position
-      bool fixedRotation;
-      double fixedAngle; //fixed angle value (in rad)
-
-      bool alwaysShow; //true is label is to always be shown (but causes overlapping)
-
-      // array of parts - possibly not necessary
-      //int nPart;
-      //FeaturePart** parts;
+      bool fixedRotation = false;
+      double fixedAngle = false; //fixed angle value (in rad)
+      bool alwaysShow = false; //true is label is to always be shown (but causes overlapping)
   };
 
   /**

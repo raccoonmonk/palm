@@ -55,8 +55,12 @@
 namespace pal
 {
   Feature::Feature(Layer* l, FeatureId geom_id, PalGeometry* userG, double lx, double ly )
-      : layer( l ), userGeom( userG ), label_x( lx ), label_y( ly ), distlabel( 0 ), labelInfo( NULL ), uid(geom_id), fixedPos( false ),
-      quadOffset( false ), offsetPos( false ), fixedRotation( false ), alwaysShow( false )
+      : layer(l)
+      , userGeom(userG)
+      , label_x(lx)
+      , label_y(ly)
+      , distlabel(0)
+      , uid(geom_id)
   { }
 
   Feature::~Feature() { }
