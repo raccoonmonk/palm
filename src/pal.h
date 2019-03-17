@@ -33,6 +33,7 @@
 #include <list>
 #include <iostream>
 #include <mutex>
+#include <memory>
 
 /**
  * \mainpage Pal Libray
@@ -119,7 +120,7 @@ namespace pal
       friend class FeaturePart;
       friend class Layer;
     private:
-    std::list<Layer*> *layers;
+    std::list<std::unique_ptr<Layer>> layers;
     mutable std::mutex lyrsMutex;
 
       Units map_unit;
@@ -271,21 +272,21 @@ namespace pal
        *
        * @return a pointer to the layer or nullptr if the layer does not exist
        */
-      const Layer *findLayer(const char *lyrName) const;
+      const Layer* findLayer(const char *lyrName) const;
 
 	  /**
 	   * \brief get all layers
 	   *
 	   * @return a list of all layers
 	   */
-	  std::list<Layer*> *getLayers();
+    std::list<std::unique_ptr<Layer>> & getLayers();
 
       /**
        * \brief remove a layer
        *
        * @param layer layer to remove
        */
-      void removeLayer( Layer *layer );
+      void removeLayer(std::unique_ptr<Layer>& layer );
 
       /**
        * \brief the labeling machine

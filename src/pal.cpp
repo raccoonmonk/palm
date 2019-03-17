@@ -80,11 +80,6 @@ namespace pal
 
   Pal::Pal()
   {
-    // do not init and exit GEOS - we do it inside QGIS
-    //initGEOS( geosNotice, geosError );
-
-    layers = new std::list<Layer*>();
-
     ejChainDeg = 50;
     tenure = 10;
     candListSize = 0.2;
@@ -112,63 +107,53 @@ namespace pal
 
   }
 
-  std::list<Layer*>* Pal::getLayers()
+  std::list<std::unique_ptr<Layer>> & Pal::getLayers()
   {
-    // TODO make const ! or whatever else
     return layers;
   }
 
 const Layer* Pal::findLayer( const char *lyrName ) const {
   std::lock_guard<std::mutex> guard(lyrsMutex);
-  for (auto * layer : *layers) {
+  for (const auto & layer : layers) {
     if (strcmp(layer->name, lyrName) == 0)
-    return layer;
+    return layer.get();
   }
   return nullptr;
 }
 
 
-void Pal::removeLayer(Layer * layer) {
+void Pal::removeLayer(std::unique_ptr<Layer> & layer) {
   if (!layer)
     return;
   std::lock_guard<std::mutex> guard(lyrsMutex);
-  layers->remove(layer);
-  delete layer;
+  layers.remove(layer);
 }
 
 
 Pal::~Pal() {
   std::lock_guard<std::mutex> guard(lyrsMutex);
-  for (auto * layer : *layers) {
-    delete layer;
-  }
-  delete layers;
+  layers.clear();
 }
 
 
   Layer * Pal::addLayer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, Units label_unit, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll )
   {
-    Layer *lyr;
-    lyrsMutex.lock();
+    std::lock_guard<std::mutex> guard(lyrsMutex);
 
 #ifdef _DEBUG_
     std::cout << "Pal::addLayer" << std::endl;
     std::cout << "lyrName:" << lyrName << std::endl;
-    std::cout << "nbLayers:" << layers->size() << std::endl;
+    std::cout << "nbLayers:" << layers.size() << std::endl;
 #endif
-    for ( auto it = layers->begin(); it != layers->end(); it++ )
-    {
-      if ( strcmp(( *it )->name, lyrName ) == 0 )   // if layer already known
-      {
-  lyrsMutex.unlock();
-	//There is already a layer with this name, so we just return the existing one.
-	//Sometimes the same layer is added twice (e.g. datetime split with otf-reprojection)
-	return *it;
+    for (const auto & layer : layers) {
+      if ( strcmp(layer->name, lyrName ) == 0 ) {   // if layer already known
+        //There is already a layer with this name, so we just return the existing one.
+        //Sometimes the same layer is added twice (e.g. datetime split with otf-reprojection)
+        return layer.get();
       }
     }
-    lyr = new Layer( lyrName, min_scale, max_scale, arrangement, label_unit, defaultPriority, obstacle, active, toLabel, this, displayAll );
-    layers->push_back( lyr );
-    lyrsMutex.unlock();
+    Layer * lyr = new Layer( lyrName, min_scale, max_scale, arrangement, label_unit, defaultPriority, obstacle, active, toLabel, this, displayAll );
+    layers.push_back(std::unique_ptr<Layer>(lyr));
 
     return lyr;
   }
@@ -383,9 +368,8 @@ Pal::~Pal() {
     lyrsMutex.lock();
     for ( i = 0; i < nbLayers; i++ )
     {
-        for ( auto it = layers->begin(); it != layers->end(); it++ ) // iterate on pal->layers
+        for (const auto & layer : layers) // iterate on pal->layers
       {
-        layer = *it;
         // Only select those who are active and labellable (with scale constraint) or those who are active and which must be treated as obstaclewhich must be treated as obstacle
         if ( layer->active
              && ( layer->obstacle || ( layer->toLabel && layer->isScaleValid( scale ) ) ) )
@@ -398,7 +382,7 @@ Pal::~Pal() {
             if ( layer->getMergeConnectedLines() )
               layer->joinConnectedFeatures();
 
-            context->layer = layer;
+            context->layer = layer.get();
             context->priority = layersFactor[i];
             // lookup for feature (and generates candidates list)
 
@@ -605,12 +589,12 @@ Pal::~Pal() {
 
 std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat **stats, bool displayAll ) {
   lyrsMutex.lock();
-  const int nbLayers = layers->size();
+  const int nbLayers = layers.size();
 
   char **layersName = new char*[nbLayers];
   double *priorities = new double[nbLayers];
   int i = 0;
-  for (Layer * layer : *layers) {
+  for (const auto & layer : layers) {
     layersName[i] = layer->name;
     priorities[i] = layer->defaultPriority;
     i++;
@@ -758,15 +742,13 @@ std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat 
   {
     // find out: nbLayers, layersName, layersFactor
     lyrsMutex.lock();
-    int nbLayers = layers->size();
+    int nbLayers = layers.size();
 
     char **layersName = new char*[nbLayers];
     double *priorities = new double[nbLayers];
     Layer *layer;
     int i = 0;
-    for ( auto it = layers->begin(); it != layers->end(); it++ )
-    {
-      layer = *it;
+    for (const auto & layer : layers) {
       layersName[i] = layer->name;
       priorities[i] = layer->defaultPriority;
       i++;
