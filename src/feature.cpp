@@ -61,8 +61,6 @@ namespace pal
 
   Feature::~Feature() { }
 
-  ////////////
-
   FeaturePart::FeaturePart( Feature *feat, const GEOSGeometry* geom )
       : f( feat ), nbHoles( 0 ), holes( NULL )
   {

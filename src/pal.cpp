@@ -607,36 +607,26 @@ Pal::~Pal() {
     return prob;
   }
 
-  std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat **stats, bool displayAll )
-  {
+std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat **stats, bool displayAll ) {
+  lyrsMutex.lock();
+  const int nbLayers = layers->size();
 
-#ifdef _DEBUG_FULL_
-    std::cout << "LABELLER (active)" << std::endl;
-#endif
-    int i;
-
-    lyrsMutex.lock();
-    int nbLayers = layers->size();
-
-    char **layersName = new char*[nbLayers];
-    double *priorities = new double[nbLayers];
-    Layer *layer;
-    i = 0;
-    for ( auto it = layers->begin(); it != layers->end(); it++ )
-    {
-      layer = *it;
-      layersName[i] = layer->name;
-      priorities[i] = layer->defaultPriority;
-      i++;
-    }
-    lyrsMutex.unlock();
-
-    std::list<LabelPosition*> * solution = labeller( nbLayers, layersName, priorities, scale, bbox, stats, displayAll );
-
-    delete[] layersName;
-    delete[] priorities;
-    return solution;
+  char **layersName = new char*[nbLayers];
+  double *priorities = new double[nbLayers];
+  int i = 0;
+  for (Layer * layer : *layers) {
+    layersName[i] = layer->name;
+    priorities[i] = layer->defaultPriority;
+    i++;
   }
+  lyrsMutex.unlock();
+
+  std::list<LabelPosition*> * solution = labeller( nbLayers, layersName, priorities, scale, bbox, stats, displayAll );
+
+  delete[] layersName;
+  delete[] priorities;
+  return solution;
+}
 
 
   /*
