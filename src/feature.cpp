@@ -1054,7 +1054,7 @@ namespace pal
 
     shapes_toProcess->push_back( mapShape );
 
-    splitPolygons( shapes_toProcess, shapes_final, xrm, yrm, f->uid );
+    splitPolygons( shapes_toProcess, shapes_final, xrm, yrm );
 
 
     delete shapes_toProcess;

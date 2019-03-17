@@ -191,7 +191,7 @@ namespace pal
 
   void PointSet::splitPolygons( LinkedList<PointSet*> *shapes_toProcess,
                                 LinkedList<PointSet*> *shapes_final,
-                                double xrm, double yrm , FeatureId uid )
+                                double xrm, double yrm )
   {
     int i, j;
 
@@ -480,9 +480,6 @@ namespace pal
 #endif
         if ( retainedPt == -1 || fps == -1 || fpe == -1 )
         {
-#ifdef _DEBUG_
-          std::cout << std::endl << "Failed to split feature !!! (uid=" << uid << ")" << std::endl;
-#endif
           if ( shape->parent )
             delete shape;
         }

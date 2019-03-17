@@ -38,7 +38,6 @@
 
 #include "rtree.hpp"
 #include "linkedlist.hpp"
-#include "feature_id.h"
 
 namespace pal
 {
@@ -133,7 +132,7 @@ namespace pal
        */
       static void splitPolygons(LinkedList<PointSet*> *shapes_toProcess,
                                  LinkedList<PointSet*> *shapes_final,
-                                 double xrm, double yrm, FeatureId uid );
+                                 double xrm, double yrm);
 
 
 
