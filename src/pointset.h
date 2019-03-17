@@ -69,19 +69,6 @@ namespace pal
     double length;
   } CHullBox;
 
-
-
-  inline bool ptrCrossingCompare( Crossing * a, Crossing * b )
-  {
-    return a == b;
-  }
-
-  inline bool crossingDist( void *a, void *b )
-  {
-    return (( Crossing* ) a )->d > (( Crossing* ) b )->d;
-  }
-
-
   class  PointSet
   {
       friend class FeaturePart;
