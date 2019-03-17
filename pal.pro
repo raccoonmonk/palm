@@ -4,36 +4,37 @@ CONFIG += c++11
 CONFIG += shared
 CONFIG -= qt
 LIBS += -lgeos_c
+include(pal11.pri)
 
 HEADERS += \
-    src/pal/costcalculator.h \
-    src/pal/feature.h \
-    src/pal/geomfunction.h \
-    src/pal/hashtable.hpp \
-    src/pal/internalexception.h \
-    src/pal/labelposition.h \
-    src/pal/layer.h \
-    src/pal/linkedlist.hpp \
-    src/pal/pal.h \
-    src/pal/palexception.h \
-    src/pal/palgeometry.h \
-    src/pal/palstat.h \
-    src/pal/pointset.h \
-    src/pal/priorityqueue.h \
-    src/pal/problem.h \
-    src/pal/rtree.hpp \
-    src/pal/util.h \
-    src/pal/feature_id.h
+    src/costcalculator.h \
+    src/feature.h \
+    src/geomfunction.h \
+    src/hashtable.hpp \
+    src/internalexception.h \
+    src/labelposition.h \
+    src/layer.h \
+    src/linkedlist.hpp \
+    src/pal.h \
+    src/palexception.h \
+    src/palgeometry.h \
+    src/palstat.h \
+    src/pointset.h \
+    src/priorityqueue.h \
+    src/problem.h \
+    src/rtree.hpp \
+    src/util.h \
+    src/feature_id.h
 
 SOURCES += \
-    src/pal/costcalculator.cpp \
-    src/pal/feature.cpp \
-    src/pal/geomfunction.cpp \
-    src/pal/labelposition.cpp \
-    src/pal/layer.cpp \
-    src/pal/pal.cpp \
-    src/pal/palstat.cpp \
-    src/pal/pointset.cpp \
-    src/pal/priorityqueue.cpp \
-    src/pal/problem.cpp \
-    src/pal/util.cpp
+    src/costcalculator.cpp \
+    src/feature.cpp \
+    src/geomfunction.cpp \
+    src/labelposition.cpp \
+    src/layer.cpp \
+    src/pal.cpp \
+    src/palstat.cpp \
+    src/pointset.cpp \
+    src/priorityqueue.cpp \
+    src/problem.cpp \
+    src/util.cpp
