@@ -64,8 +64,6 @@ namespace pal
     this->name = new char[strlen( lyrName ) +1];
     strcpy( this->name, lyrName );
 
-	modMutex = new std::mutex();
-
     rtree = new RTree<FeaturePart*, double, 2, double>();
     hashtable = new std::unordered_map<FeatureId, Feature*>();
 
@@ -85,7 +83,7 @@ namespace pal
 
   Layer::~Layer()
   {
-    modMutex->lock();
+    std::lock_guard<std::mutex> guard(modMutex);
 
     if ( featureParts )
     {
@@ -116,7 +114,6 @@ namespace pal
     delete rtree;
 
     delete hashtable;
-    delete modMutex;
   }
 
   Feature* Layer::getFeature(FeatureId id)
@@ -229,11 +226,11 @@ namespace pal
     if ( label_x < 0 || label_y < 0 )
       return false;
 
-    modMutex->lock();
+    modMutex.lock();
 
     if ( hashtable->find(geom_id) != hashtable->end() )
     {
-      modMutex->unlock();
+      modMutex.unlock();
       //A feature with this id already exists. Don't throw an exception as sometimes,
       //the same feature is added twice (dateline split with otf-reprojection)
       return false;
@@ -276,7 +273,7 @@ namespace pal
     LinkedList <const GEOSGeometry*> *simpleGeometries = unmulti( the_geom );
     if ( simpleGeometries == NULL ) // unmulti() failed?
     {
-      modMutex->unlock();
+      modMutex.unlock();
       throw InternalException::UnknownGeometry();
     }
 
@@ -295,7 +292,7 @@ namespace pal
 
       if ( type != GEOS_POINT && type != GEOS_LINESTRING && type != GEOS_POLYGON )
       {
-        modMutex->unlock();
+        modMutex.unlock();
         throw InternalException::UnknownGeometry();
       }
 
@@ -329,8 +326,8 @@ namespace pal
           delete biggest_part; // safe with NULL part
           biggest_part = fpart;
         } else {
-	  delete fpart;
-	}
+    delete fpart;
+  }
         continue; // don't add the feature part now, do it later
         // TODO: we should probably add also other parts to act just as obstacles
       }
@@ -344,7 +341,7 @@ namespace pal
 
     userGeom->releaseGeosGeometry( the_geom );
 
-    modMutex->unlock();
+    modMutex.unlock();
 
     // if using only biggest parts...
     if (( mode == LabelPerFeature || f->fixedPosition() ) && biggest_part != NULL )

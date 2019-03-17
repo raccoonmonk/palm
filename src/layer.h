@@ -60,8 +60,7 @@ namespace pal
    *
    *  \author Maxence Laurent <maxence _dot_ laurent _at_ heig-vd _dot_ ch>
    */
-  class  Layer
-  {
+class  Layer {
       friend class Pal;
       friend class FeaturePart;
 
@@ -81,46 +80,6 @@ namespace pal
       };
 
       bool getDisplayAll() const { return displayAll; }
-
-    protected:
-      char *name; /* unique */
-
-      /** list of feature parts */
-      LinkedList<FeaturePart*> *featureParts;
-
-      /** list of features - for deletion */
-      LinkedList<Feature*> *features;
-
-      Pal *pal;
-
-      double defaultPriority;
-
-      bool obstacle;
-      bool active;
-      bool toLabel;
-      bool displayAll;
-
-      Units label_unit;
-
-      double min_scale;
-      double max_scale;
-
-      /** optional flags used for some placement methods */
-      Arrangement arrangement;
-      unsigned long arrangementFlags;
-      LabelMode mode;
-      bool mergeLines;
-
-      UpsideDownLabels upsidedownLabels;
-
-      // indexes (spatial and id)
-      RTree<FeaturePart*, double, 2, double, 8, 4> *rtree;
-      std::unordered_map<FeatureId, Feature*> *hashtable;
-
-      HashTable< LinkedList<FeaturePart*>* > * connectedHashtable;
-      std::vector<char*>* connectedTexts;
-
-	  std::mutex *modMutex;
 
       /**
        * \brief Create a new layer
@@ -323,7 +282,46 @@ namespace pal
       /** join connected features with the same label text */
       void joinConnectedFeatures();
 
-  };
+    protected:
+      char *name; /* unique */
+
+      /** list of feature parts */
+      LinkedList<FeaturePart*> *featureParts;
+
+      /** list of features - for deletion */
+      LinkedList<Feature*> *features;
+
+      Pal *pal;
+
+      double defaultPriority;
+
+      bool obstacle;
+      bool active;
+      bool toLabel;
+      bool displayAll;
+
+      Units label_unit;
+
+      double min_scale;
+      double max_scale;
+
+      /** optional flags used for some placement methods */
+      Arrangement arrangement;
+      unsigned long arrangementFlags;
+      LabelMode mode;
+      bool mergeLines;
+
+      UpsideDownLabels upsidedownLabels;
+
+      // indexes (spatial and id)
+      RTree<FeaturePart*, double, 2, double, 8, 4> *rtree;
+      std::unordered_map<FeatureId, Feature*> *hashtable;
+
+      HashTable< LinkedList<FeaturePart*>* > * connectedHashtable;
+      std::vector<char*>* connectedTexts;
+
+    std::mutex modMutex;
+};
 
 } // end namespace pal
 

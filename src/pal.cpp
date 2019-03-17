@@ -426,9 +426,9 @@ namespace pal
             <<  "    id=\"" << layer->name << "\">" << std::endl << std::endl;
 #endif
 
-            context->layer->modMutex->lock();
+            context->layer->modMutex.lock();
             context->layer->rtree->Search( amin, amax, extractFeatCallback, ( void* ) context );
-            context->layer->modMutex->unlock();
+            context->layer->modMutex.unlock();
 
 #ifdef _EXPORT_MAP_
             *svgmap  << "</g>" << std::endl << std::endl;
