@@ -197,7 +197,7 @@ namespace pal
       j = ( i + 1 ) % nbPoints;
       if ( i == j )
         break;
-      if ( vabs( x[i] - x[j] ) < 0.0000001 && vabs( y[i] - y[j] ) < 0.0000001 )
+      if ( std::abs( x[i] - x[j] ) < 0.0000001 && std::abs( y[i] - y[j] ) < 0.0000001 )
       {
         new_nbPoints--;
         ok[i] = false;
@@ -559,7 +559,7 @@ namespace pal
     {
       //dist /= nbls;
       l = 0;
-      dist = min( yrm, xrm );
+      dist = std::min( yrm, xrm );
     }
     else   // line length < label with => centering label position
     {
@@ -596,10 +596,10 @@ namespace pal
         cost = ( 1 - cost ) / 100; // < 0.0001, 0.01 > (but 0.005 is already pretty much)
 
       // penalize positions which are further from the line's midpoint
-      double costCenter = vabs( ll / 2 - ( l + xrm / 2 ) ) / ll; // <0, 0.5>
+      double costCenter = std::abs( ll / 2 - ( l + xrm / 2 ) ) / ll; // <0, 0.5>
       cost += costCenter / 1000;  // < 0, 0.0005 >
 
-      if (( vabs( ey - by ) < EPSILON ) && ( vabs( ex - bx ) < EPSILON ) )
+      if (( std::abs( ey - by ) < EPSILON ) && ( std::abs( ex - bx ) < EPSILON ) )
       {
         std::cout << "EPSILON " << EPSILON << std::endl;
         std::cout << "b: " << bx << ";" << by << std::endl;
@@ -903,7 +903,7 @@ namespace pal
     }
 
     LinkedList<LabelPosition*> *positions = new LinkedList<LabelPosition*> ( ptrLPosCompare );
-    double delta = max( f->labelInfo->label_height, total_distance / 10.0 );
+    double delta = std::max( f->labelInfo->label_height, total_distance / 10.0 );
 
     unsigned long flags = f->layer->getArrangementFlags();
     if ( flags == 0 )
@@ -926,7 +926,7 @@ namespace pal
           {
             diff = fabs( tmp->getAlpha() - angle_last );
             if ( diff > 2*M_PI ) diff -= 2 * M_PI;
-            diff = min( diff, 2 * M_PI - diff ); // difference 350 deg is actually just 10 deg...
+            diff = std::min( diff, 2 * M_PI - diff ); // difference 350 deg is actually just 10 deg...
             angle_diff += diff;
           }
 
@@ -942,7 +942,7 @@ namespace pal
 
         // penalize positions which are further from the line's midpoint
         double labelCenter = ( i * delta ) + f->label_x / 2;
-        double costCenter = vabs( total_distance / 2 - labelCenter ) / total_distance; // <0, 0.5>
+        double costCenter = std::abs( total_distance / 2 - labelCenter ) / total_distance; // <0, 0.5>
         cost += costCenter / 1000;  // < 0, 0.0005 >
         //std::cerr << "cost " << angle_diff << " vs " << costCenter << std::endl;
         slp->setCost( cost );
@@ -1052,7 +1052,7 @@ namespace pal
         j++;
       }
 
-      dx = dy = min( yrm, xrm ) / 2;
+      dx = dy = std::min( yrm, xrm ) / 2;
 
       int num_try = 0;
       int max_try = 10;
@@ -1339,7 +1339,7 @@ namespace pal
       double length;
       if ( GEOSLength( the_geom, &length ) != 1 )
         return; // failed to calculate length
-      double bbox_length = max( bbx[2] - bbx[0], bby[2] - bby[0] );
+      double bbox_length = std::max( bbx[2] - bbx[0], bby[2] - bby[0] );
       if ( length >= bbox_length / 4 )
         return; // the line is longer than quarter of height or width - don't penalize it
 

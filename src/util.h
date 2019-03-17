@@ -75,24 +75,6 @@ namespace pal
 #define EPSILON 1e-9
 
 
-  inline int max( int a, int b )
-  { return a > b ? a : b; }
-
-  inline double max( double a, double b )
-  { return a > b ? a : b; }
-
-  inline int min( int a, int b )
-  { return a < b ? a : b; }
-
-  inline double min( double a, double b )
-  { return a < b ? a : b; }
-
-  inline double vabs( double x )
-  { return x >= 0 ? x : -x; }
-
-
-
-
   inline double degree2meter( double delta_deg )
   {
     double lat = delta_deg * 0.5;

@@ -219,7 +219,7 @@ namespace pal
   PolygonCostCalculator::PolygonCostCalculator( LabelPosition *lp ) : lp( lp )
   {
     int i;
-    double hyp = max( lp->feature->xmax - lp->feature->xmin, lp->feature->ymax - lp->feature->ymin );
+    double hyp = std::max( lp->feature->xmax - lp->feature->xmin, lp->feature->ymax - lp->feature->ymin );
     hyp *= 10;
 
     px = ( lp->x[0] + lp->x[2] ) / 2.0;
@@ -353,10 +353,10 @@ namespace pal
 
     double a, b, c, d;
 
-    a = min( dist[0], dist[4] );
-    b = min( dist[1], dist[5] );
-    c = min( dist[2], dist[6] );
-    d = min( dist[3], dist[7] );
+    a = std::min( dist[0], dist[4] );
+    b = std::min( dist[1], dist[5] );
+    c = std::min( dist[2], dist[6] );
+    d = std::min( dist[3], dist[7] );
 
 #if 0
     if ( a != EPSILON || b != EPSILON || c != EPSILON || d != EPSILON )

@@ -264,13 +264,13 @@ namespace pal
       toDist = distance[0];
 
       distance[1] = dist_euc2d( cx, cy, xs1, ys1 );// j2
-      toDist = max( toDist, distance[1] );
+      toDist = std::max( toDist, distance[1] );
 
       distance[2] = dist_euc2d( cx, cy, x3, y3 );// k
-      toDist = max( toDist, distance[2] );
+      toDist = std::max( toDist, distance[2] );
 
       distance[3] = dist_euc2d( cx, cy, xs2, ys2 ); // l2
-      toDist = max( toDist, distance[3] );
+      toDist = std::max( toDist, distance[3] );
 
       for ( i = 0; i < 4; i++ )
       {
@@ -412,14 +412,14 @@ namespace pal
 
     // find the lowest x value from the lowest y
     ref = 1;
-    while ( ref < n && vabs( y[id[cHull[ref]]] -  y[id[cHull[0]]] ) < EPSILON ) ref++;
+    while ( ref < n && std::abs( y[id[cHull[ref]]] -  y[id[cHull[0]]] ) < EPSILON ) ref++;
 
     heapsort( cHull, id, x, ref );
 
     // the first point is now for sure in the hull as well as the ref one
     for ( i = ref; i < n; i++ )
     {
-      if ( vabs( y[id[cHull[i]]] - y[id[cHull[0]]] ) < EPSILON )
+      if ( std::abs( y[id[cHull[i]]] - y[id[cHull[0]]] ) < EPSILON )
         tan[i] = FLT_MAX;
       else
         tan[i] = ( x[id[cHull[0]]] - x[id[cHull[i]]] ) / ( y[id[cHull[i]]] - y[id[cHull[0]]] );
@@ -447,7 +447,7 @@ namespace pal
       result = cross_product( x[id[stack[second]]], y[id[stack[second]]],
                               x[id[stack[top]]], y[id[stack[top]]], x[id[cHull[i]]], y[id[cHull[i]]] );
       // Coolineaire !! garder le plus éloigné
-      if ( vabs( result ) < EPSILON )
+      if ( std::abs( result ) < EPSILON )
       {
         if ( dist_euc2d_sq( x[id[stack[second]]], y[id[stack[second]]], x[id[cHull[i]]], y[id[cHull[i]]] )
              >  dist_euc2d_sq( x[id[stack[second]]], y[id[stack[second]]], x[id[stack[top]]], y[id[stack[top]]] ) )
