@@ -84,8 +84,6 @@ namespace pal
 
     layers = new std::list<Layer*>();
 
-    lyrsMutex = new std::mutex();
-
     ejChainDeg = 50;
     tenure = 10;
     candListSize = 0.2;
@@ -121,53 +119,41 @@ namespace pal
 
   Layer *Pal::getLayer( const char *lyrName )
   {
-    lyrsMutex->lock();
+    lyrsMutex.lock();
     for (auto it = layers->begin(); it != layers->end(); it++)
       if ( strcmp(( *it )->name, lyrName ) == 0 )
       {
-        lyrsMutex->unlock();
+        lyrsMutex.unlock();
         return *it;
       }
 
-    lyrsMutex->unlock();
+    lyrsMutex.unlock();
     throw new PalException::UnknownLayer();
   }
 
 
-  void Pal::removeLayer( Layer *layer )
-  {
-    lyrsMutex->lock();
-    if ( layer )
-    {
-      layers->remove( layer );
-      delete layer;
-    }
-    lyrsMutex->unlock();
+void Pal::removeLayer(Layer * layer) {
+  if (!layer)
+    return;
+  std::lock_guard<std::mutex> guard(lyrsMutex);
+  layers->remove(layer);
+  delete layer;
+}
+
+
+Pal::~Pal() {
+  std::lock_guard<std::mutex> guard(lyrsMutex);
+  for (auto * layer : *layers) {
+    delete layer;
   }
-
-
-  Pal::~Pal()
-  {
-
-    lyrsMutex->lock();
-    while ( layers->size() > 0 )
-    {
-      delete layers->front();
-      layers->pop_front();
-    }
-
-    delete layers;
-    delete lyrsMutex;
-
-    // do not init and exit GEOS - we do it inside QGIS
-    //finishGEOS();
-  }
+  delete layers;
+}
 
 
   Layer * Pal::addLayer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, Units label_unit, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll )
   {
     Layer *lyr;
-    lyrsMutex->lock();
+    lyrsMutex.lock();
 
 #ifdef _DEBUG_
     std::cout << "Pal::addLayer" << std::endl;
@@ -178,7 +164,7 @@ namespace pal
     {
       if ( strcmp(( *it )->name, lyrName ) == 0 )   // if layer already known
       {
-	lyrsMutex->unlock();
+  lyrsMutex.unlock();
 	//There is already a layer with this name, so we just return the existing one.
 	//Sometimes the same layer is added twice (e.g. datetime split with otf-reprojection)
 	return *it;
@@ -186,7 +172,7 @@ namespace pal
     }
     lyr = new Layer( lyrName, min_scale, max_scale, arrangement, label_unit, defaultPriority, obstacle, active, toLabel, this, displayAll );
     layers->push_back( lyr );
-    lyrsMutex->unlock();
+    lyrsMutex.unlock();
 
     return lyr;
   }
@@ -398,7 +384,7 @@ namespace pal
 
     std::list<char*> *labLayers = new std::list<char*>();
 
-    lyrsMutex->lock();
+    lyrsMutex.lock();
     for ( i = 0; i < nbLayers; i++ )
     {
         for ( auto it = layers->begin(); it != layers->end(); it++ ) // iterate on pal->layers
@@ -458,7 +444,7 @@ namespace pal
       }
     }
     delete context;
-    lyrsMutex->unlock();
+    lyrsMutex.unlock();
 
     prob->nbLabelledLayers = labLayers->size();
     prob->labelledLayersName = new char*[prob->nbLabelledLayers];
@@ -629,7 +615,7 @@ namespace pal
 #endif
     int i;
 
-    lyrsMutex->lock();
+    lyrsMutex.lock();
     int nbLayers = layers->size();
 
     char **layersName = new char*[nbLayers];
@@ -643,7 +629,7 @@ namespace pal
       priorities[i] = layer->defaultPriority;
       i++;
     }
-    lyrsMutex->unlock();
+    lyrsMutex.unlock();
 
     std::list<LabelPosition*> * solution = labeller( nbLayers, layersName, priorities, scale, bbox, stats, displayAll );
 
@@ -785,7 +771,7 @@ namespace pal
   Problem* Pal::extractProblem( double scale, double bbox[4] )
   {
     // find out: nbLayers, layersName, layersFactor
-    lyrsMutex->lock();
+    lyrsMutex.lock();
     int nbLayers = layers->size();
 
     char **layersName = new char*[nbLayers];
@@ -799,7 +785,7 @@ namespace pal
       priorities[i] = layer->defaultPriority;
       i++;
     }
-    lyrsMutex->unlock();
+    lyrsMutex.unlock();
 
     Problem* prob = extract( nbLayers, layersName, priorities, bbox[0], bbox[1], bbox[2], bbox[3], scale, NULL );
 

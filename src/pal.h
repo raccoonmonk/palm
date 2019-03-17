@@ -32,10 +32,7 @@
 
 #include <list>
 #include <iostream>
-#include <ctime>
 #include <mutex>
-
-// TODO ${MAJOR} ${MINOR} etc instead of 0.2
 
 /**
  * \mainpage Pal Libray
@@ -122,12 +119,8 @@ namespace pal
       friend class FeaturePart;
       friend class Layer;
     private:
-	  std::list<Layer*> *layers;
-
-	  std::mutex *lyrsMutex;
-
-      // TODO remove after tests !!!
-      clock_t tmpTime;
+    std::list<Layer*> *layers;
+    std::mutex lyrsMutex;
 
       Units map_unit;
 
