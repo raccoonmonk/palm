@@ -120,7 +120,7 @@ namespace pal
       friend class Layer;
     private:
     std::list<Layer*> *layers;
-    std::mutex lyrsMutex;
+    mutable std::mutex lyrsMutex;
 
       Units map_unit;
 
@@ -269,11 +269,9 @@ namespace pal
        *
        * @param lyrName name of layer to search
        *
-       * @throws PalException::UnkownLayer
-       *
-       * @return a pointer on layer or NULL if layer not exist
+       * @return a pointer to the layer or nullptr if the layer does not exist
        */
-      Layer *getLayer( const char *lyrName );
+      const Layer *findLayer(const char *lyrName) const;
 
 	  /**
 	   * \brief get all layers

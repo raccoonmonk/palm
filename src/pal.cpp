@@ -41,6 +41,7 @@
 #include <cstring>
 #include <cfloat>
 #include <list>
+#include <algorithm>
 //#include <geos/geom/Geometry.h>
 #include <geos_c.h>
 
@@ -117,19 +118,14 @@ namespace pal
     return layers;
   }
 
-  Layer *Pal::getLayer( const char *lyrName )
-  {
-    lyrsMutex.lock();
-    for (auto it = layers->begin(); it != layers->end(); it++)
-      if ( strcmp(( *it )->name, lyrName ) == 0 )
-      {
-        lyrsMutex.unlock();
-        return *it;
-      }
-
-    lyrsMutex.unlock();
-    throw new PalException::UnknownLayer();
+const Layer* Pal::findLayer( const char *lyrName ) const {
+  std::lock_guard<std::mutex> guard(lyrsMutex);
+  for (auto * layer : *layers) {
+    if (strcmp(layer->name, lyrName) == 0)
+    return layer;
   }
+  return nullptr;
+}
 
 
 void Pal::removeLayer(Layer * layer) {
