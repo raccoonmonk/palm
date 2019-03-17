@@ -46,17 +46,6 @@
 #endif
 namespace pal
 {
-
-
-  PointSet::PointSet()
-  {
-    nbPoints = cHullSize =  0;
-    x = NULL;
-    y = NULL;
-    cHull = NULL;
-    type = -1;
-  }
-
   PointSet::PointSet( int nbPoints, double *x, double *y )
   {
     this->nbPoints = nbPoints;

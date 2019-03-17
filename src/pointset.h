@@ -79,16 +79,16 @@ namespace pal
 
     protected:
       int nbPoints;
-      double *x;
-      double *y;   // points order is counterclockwise
+      double *x = nullptr;
+      double *y = nullptr;   // points order is counterclockwise
 
-      int *cHull;
-      int cHullSize;
+      int *cHull = nullptr;
+      int cHullSize = 0;
 
-      int type;
+      int type = -1;
 
-      PointSet* holeOf;
-      PointSet* parent;
+      PointSet* holeOf = nullptr;
+      PointSet* parent = nullptr;
 
       PointSet( double x, double y );
 
@@ -96,13 +96,13 @@ namespace pal
 
       void deleteCoords();
 
-      double xmin;
-      double xmax;
-      double ymin;
-      double ymax;
+      double xmin = 0;
+      double xmax = 0;
+      double ymin = 0;
+      double ymax = 0;
 
     public:
-      PointSet();
+      PointSet() = default;
       PointSet( int nbPoints, double *x, double *y );
       virtual ~PointSet();
 

@@ -107,8 +107,6 @@ namespace pal
    */
   void FeaturePart::extractCoords( const GEOSGeometry* geom )
   {
-    int i, j;
-
     const GEOSCoordSequence *coordSeq;
 
     type = GEOSGeomTypeId( geom );
@@ -121,10 +119,10 @@ namespace pal
         nbHoles = GEOSGetNumInteriorRings( geom );
         holes = new PointSet*[nbHoles];
 
-        for ( i = 0; i < nbHoles; i++ )
+        for (int i = 0; i < nbHoles; i++ )
         {
           holes[i] = new PointSet();
-          holes[i]->holeOf = NULL;
+          holes[i]->holeOf = nullptr;
 
           const GEOSGeometry* interior =  GEOSGetInteriorRingN( geom, i );
           holes[i]->nbPoints = GEOSGetNumCoordinates( interior );
@@ -136,7 +134,7 @@ namespace pal
 
           coordSeq = GEOSGeom_getCoordSeq( interior );
 
-          for ( j = 0; j < holes[i]->nbPoints; j++ )
+          for (int j = 0; j < holes[i]->nbPoints; j++ )
           {
             GEOSCoordSeq_getX( coordSeq, j, &holes[i]->x[j] );
             GEOSCoordSeq_getY( coordSeq, j, &holes[i]->y[j] );
@@ -173,7 +171,7 @@ namespace pal
     x = new double[nbPoints];
     y = new double[nbPoints];
 
-    for ( i = 0; i < nbPoints; i++ )
+    for (int i = 0; i < nbPoints; i++ )
     {
       GEOSCoordSeq_getX( coordSeq, i, &x[i] );
       GEOSCoordSeq_getY( coordSeq, i, &y[i] );
