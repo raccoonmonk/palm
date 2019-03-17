@@ -1,10 +1,10 @@
 TEMPLATE = lib
-TARGET = pal
+TARGET = palm
 CONFIG += c++11
 CONFIG += shared
 CONFIG -= qt
 LIBS += -lgeos_c
-include(pal11.pri)
+include(palm.pri)
 
 HEADERS += \
     src/costcalculator.h \

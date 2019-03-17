@@ -1,5 +1,6 @@
 INSTALL
 Makefile.in
+Makefile
 aclocal.m4
 autom4te.cache/*
 config.guess
@@ -13,6 +14,6 @@ ltmain.sh
 missing
 src/jpal/Makefile
 .qmake.stash
-pal.pro.user
-pal11.pri
+palm.pro.user
+palm.pri
 

@@ -359,7 +359,6 @@ Pal::~Pal() {
      *
      * */
     int oldNbft = 0;
-    Layer *layer;
 
     std::list<char*> *labLayers = new std::list<char*>();
 
@@ -744,7 +743,6 @@ std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat 
 
     char **layersName = new char*[nbLayers];
     double *priorities = new double[nbLayers];
-    Layer *layer;
     int i = 0;
     for (const auto & layer : layers) {
       layersName[i] = layer->name;
