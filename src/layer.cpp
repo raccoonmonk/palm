@@ -345,8 +345,8 @@ namespace pal
 
     // add feature to layer if we have added something
     if (!first_feat) {
-      features.push_back(std::move(f));
       hashtable->insert( {geom_id, f.get()} );
+      features.push_back(std::move(f));
     }
 
     return !first_feat; // true if we've added something
