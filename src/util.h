@@ -72,6 +72,11 @@ namespace pal
 
 #define EPSILON 1e-9
 
+template<typename T>
+bool is_close_to_zero(T value) {
+  static_assert(std::is_floating_point<T>::value);
+  return std::abs(value) < std::numeric_limits<decltype(value)>::epsilon();
+}
 
   inline double degree2meter( double delta_deg )
   {

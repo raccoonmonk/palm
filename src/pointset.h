@@ -77,10 +77,11 @@ namespace pal
       friend class PolygonCostCalculator;
       friend class Layer;
 
-    protected:
-      int nbPoints;
+    public:
+      int nbPoints = 0;
       double *x = nullptr;
       double *y = nullptr;   // points order is counterclockwise
+    protected:
 
       int *cHull = nullptr;
       int cHullSize = 0;

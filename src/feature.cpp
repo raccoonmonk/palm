@@ -668,6 +668,53 @@ namespace pal
     return nbp;
   }
 
+  bool nextCharPosition( double charWidth, double segment_length, PointSet *path_positions, int &index, double &distance,
+                                    double &start_x, double &start_y, double &end_x, double &end_y )
+{
+  if (is_close_to_zero(segment_length))
+   return false;
+
+  double old_x = path_positions->x[index - 1];
+  double old_y = path_positions->y[index - 1];
+
+  double new_x = path_positions->x[index];
+  double new_y = path_positions->y[index];
+
+  const double dx = new_x - old_x;
+  const double dy = new_y - old_y;
+
+  start_x = old_x + dx * distance / segment_length;
+  start_y = old_y + dy * distance / segment_length;
+
+  // end of the character
+  end_x = 0;
+  end_y = 0;
+
+  if (segment_length - distance >= charWidth) {
+    // if the distance remaining in this segment is enough, we just go further along the segment
+    distance += charWidth;
+    end_x = old_x + dx * distance / segment_length;
+    end_y = old_y + dy * distance / segment_length;
+  } else {
+    // If there isn't enough distance left on this segment
+    // then we need to search until we find the line segment that ends further than ci.width away
+    do
+    {
+      old_x = new_x;
+      old_y = new_y;
+      index++;
+      if ( index >= path_positions->nbPoints ) // Bail out if we run off the end of the shape
+        return false;
+      new_x = path_positions->x[index];
+      new_y = path_positions->y[index];
+    } while ( std::hypot(start_x - new_x, start_y - new_y) < charWidth ); // Distance from start_ to new_
+    // Calculate the position to place the end of the character on
+    findLineCircleIntersection( start_x, start_y, charWidth, old_x, old_y, new_x, new_y, end_x, end_y );
+    // Need to calculate distance on the new segment
+    distance = std::hypot(old_x - end_x, old_y - end_y);
+  }
+  return true;
+}
 
   LabelPosition* FeaturePart::curvedPlacementAtOffset( PointSet* path_positions, double* path_distances, int orientation, int index, double distance )
   {
@@ -741,50 +788,10 @@ namespace pal
         return NULL;
       }
 
-      double start_x = old_x + dx * distance / segment_length;
-      double start_y = old_y + dy * distance / segment_length;
-      // Coordinates this character ends at, calculated below
-      double end_x = 0;
-      double end_y = 0;
-
-      //std::cerr << "segment len " << segment_length << "   distance " << distance << std::endl;
-      if ( segment_length - distance  >= ci.width )
-      {
-        // if the distance remaining in this segment is enough, we just go further along the segment
-        distance += ci.width;
-        end_x = old_x + dx * distance / segment_length;
-        end_y = old_y + dy * distance / segment_length;
-      }
-      else
-      {
-        // If there isn't enough distance left on this segment
-        // then we need to search until we find the line segment that ends further than ci.width away
-        do
-        {
-          old_x = new_x;
-          old_y = new_y;
-          index++;
-          if ( index >= path_positions->nbPoints ) // Bail out if we run off the end of the shape
-          {
-            delete slp;
-            return NULL;
-          }
-          new_x = path_positions->x[index];
-          new_y = path_positions->y[index];
-          dx = new_x - old_x;
-          dy = new_y - old_y;
-          segment_length = path_distances[index];
-
-          //std::cerr << "-> " << sqrt(pow(start_x - new_x,2) + pow(start_y - new_y,2)) << " vs " << ci.width << std::endl;
-
-        }
-        while ( sqrt( pow( start_x - new_x, 2 ) + pow( start_y - new_y, 2 ) ) < ci.width ); // Distance from start_ to new_
-
-        // Calculate the position to place the end of the character on
-        findLineCircleIntersection( start_x, start_y, ci.width, old_x, old_y, new_x, new_y, end_x, end_y );
-
-        // Need to calculate distance on the new segment
-        distance = sqrt( pow( old_x - end_x, 2 ) + pow( old_y - end_y, 2 ) );
+      double start_x, start_y, end_x, end_y;
+      if (!nextCharPosition(ci.width, path_distances[index], path_positions, index, distance, start_x, start_y, end_x, end_y)) {
+        delete slp;
+        return NULL;
       }
 
       // Calculate angle from the start of the character to the end based on start_/end_ position
@@ -806,6 +813,16 @@ namespace pal
         delete slp;
         return NULL;
       }
+
+    // Shift by 1/2 of the font height;
+    // for the on_line position the label's actual position must be 1/2 lower
+    double dist = f->labelInfo->label_height / 2;
+    if ( orientation < 0 )
+    {
+      dist = -dist;
+    }
+    start_x += dist * std::cos( angle + M_PI_2 );
+    start_y -= dist * std::sin( angle + M_PI_2 );
 
       double render_angle = angle;
 
@@ -870,7 +887,7 @@ namespace pal
   static LabelPosition* _createCurvedCandidate( LabelPosition* lp, double angle, double dist )
   {
     LabelPosition* newLp = new LabelPosition( *lp );
-    newLp->offsetPosition( dist*cos( angle + M_PI / 2 ), dist*sin( angle + M_PI / 2 ) );
+    newLp->offsetPosition( dist*std::cos( angle + M_PI_2 ), dist*std::sin( angle + M_PI_2 ) );
     return newLp;
   }
 
@@ -889,7 +906,7 @@ namespace pal
       if ( i == 0 )
         path_distances[i] = 0;
       else
-        path_distances[i] = sqrt( pow( old_x - mapShape->x[i], 2 ) + pow( old_y - mapShape->y[i], 2 ) );
+        path_distances[i] = std::hypot(old_x - mapShape->x[i], old_y - mapShape->y[i]);
       old_x = mapShape->x[i];
       old_y = mapShape->y[i];
 
@@ -913,54 +930,53 @@ namespace pal
     for ( int i = 0; i*delta < total_distance; i++ )
     {
       LabelPosition* slp = curvedPlacementAtOffset( mapShape, path_distances, 0, 1, i * delta );
-
-      if ( slp )
+      if (!slp)
+        continue;
       {
-        // evaluate cost
-        double angle_diff = 0.0, angle_last = 0.0, diff;
-        LabelPosition* tmp = slp;
-        double sin_avg = 0, cos_avg = 0;
-        while ( tmp )
+      // evaluate cost
+      double angle_diff = 0.0, angle_last = 0.0, diff;
+      LabelPosition* tmp = slp;
+      double sin_avg = 0, cos_avg = 0;
+      while (tmp) {
+        if ( tmp != slp ) // not first?
         {
-          if ( tmp != slp ) // not first?
-          {
-            diff = fabs( tmp->getAlpha() - angle_last );
-            if ( diff > 2*M_PI ) diff -= 2 * M_PI;
-            diff = std::min( diff, 2 * M_PI - diff ); // difference 350 deg is actually just 10 deg...
-            angle_diff += diff;
-          }
-
-          sin_avg += sin( tmp->getAlpha() );
-          cos_avg += cos( tmp->getAlpha() );
-          angle_last = tmp->getAlpha();
-          tmp = tmp->getNextPart();
+          diff = fabs( tmp->getAlpha() - angle_last );
+          if ( diff > 2*M_PI ) diff -= 2 * M_PI;
+          diff = std::min( diff, 2 * M_PI - diff ); // difference 350 deg is actually just 10 deg...
+          angle_diff += diff;
         }
 
-        double angle_diff_avg = f->labelInfo->char_num() > 1 ? ( angle_diff / ( f->labelInfo->char_num() - 1 ) ) : 0; // <0, pi> but pi/8 is much already
-        double cost = angle_diff_avg / 100; // <0, 0.031 > but usually <0, 0.003 >
-        if ( cost < 0.0001 ) cost = 0.0001;
-
-        // penalize positions which are further from the line's midpoint
-        double labelCenter = ( i * delta ) + f->label_x / 2;
-        double costCenter = std::abs( total_distance / 2 - labelCenter ) / total_distance; // <0, 0.5>
-        cost += costCenter / 1000;  // < 0, 0.0005 >
-        //std::cerr << "cost " << angle_diff << " vs " << costCenter << std::endl;
-        slp->setCost( cost );
-
-
-        // average angle is calculated with respect to periodicity of angles
-        double angle_avg = atan2( sin_avg / f->labelInfo->char_num(), cos_avg / f->labelInfo->char_num() );
-        // displacement
-        if ( flags & FLAG_ABOVE_LINE )
-          positions->push_back( _createCurvedCandidate( slp, angle_avg, f->distlabel ) );
-        if ( flags & FLAG_ON_LINE )
-          positions->push_back( _createCurvedCandidate( slp, angle_avg, -f->labelInfo->label_height / 2 ) );
-        if ( flags & FLAG_BELOW_LINE )
-          positions->push_back( _createCurvedCandidate( slp, angle_avg, -f->labelInfo->label_height - f->distlabel ) );
-
-        // delete original candidate
-        delete slp;
+        sin_avg += sin( tmp->getAlpha() );
+        cos_avg += cos( tmp->getAlpha() );
+        angle_last = tmp->getAlpha();
+        tmp = tmp->getNextPart();
       }
+
+      double angle_diff_avg = f->labelInfo->char_num() > 1 ? ( angle_diff / ( f->labelInfo->char_num() - 1 ) ) : 0; // <0, pi> but pi/8 is much already
+      double cost = angle_diff_avg / 100; // <0, 0.031 > but usually <0, 0.003 >
+      if ( cost < 0.0001 ) cost = 0.0001;
+
+      // penalize positions which are further from the line's midpoint
+      double labelCenter = ( i * delta ) + f->label_x / 2;
+      double costCenter = std::abs( total_distance / 2 - labelCenter ) / total_distance; // <0, 0.5>
+      cost += costCenter / 1000;  // < 0, 0.0005 >
+      //std::cerr << "cost " << angle_diff << " vs " << costCenter << std::endl;
+      slp->setCost( cost );
+
+
+      // average angle is calculated with respect to periodicity of angles
+      double angle_avg = atan2( sin_avg / f->labelInfo->char_num(), cos_avg / f->labelInfo->char_num() );
+      // displacement
+      if ( flags & FLAG_ABOVE_LINE )
+        positions->push_back( _createCurvedCandidate( slp, angle_avg, f->distlabel + f->labelInfo->label_height / 2 ) );
+      if ( flags & FLAG_ON_LINE )
+        positions->push_back( _createCurvedCandidate( slp, angle_avg, 0) );
+      if ( flags & FLAG_BELOW_LINE )
+        positions->push_back( _createCurvedCandidate( slp, angle_avg, -f->labelInfo->label_height / 2 - f->distlabel ) );
+
+      // delete original candidate
+      delete slp;
+    }
     }
 
 
