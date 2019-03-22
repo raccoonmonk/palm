@@ -1,3 +1,9 @@
-palm - fork of the libpal library http://pal.heig-vd.ch/
-in modern c++
+palm - Automated Label Placement library
+Fork of the PAL library http://pal.heig-vd.ch/ in modern c++
+
+Dependencies:
+GEOS library - for geometry manipulations
+
+License:
+GPL/LGPL
 
