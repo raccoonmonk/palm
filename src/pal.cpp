@@ -143,8 +143,10 @@ Pal::~Pal() {
     std::cout << "lyrName:" << lyrName << std::endl;
     std::cout << "nbLayers:" << layers.size() << std::endl;
 #endif
-    if (auto * foundLayer = findLayer(lyrName)) {   // if layer already known
-      return foundLayer;
+    for (const auto & layer : layers) {  // if layer already known
+      if (layer->name == lyrName) {
+        return layer.get();
+      }
     }
     Layer * lyr = new Layer(std::move(lyrName), min_scale, max_scale, arrangement, defaultPriority, obstacle, active, toLabel, this, displayAll);
     layers.push_back(std::unique_ptr<Layer>(lyr));
