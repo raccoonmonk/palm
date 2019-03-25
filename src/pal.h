@@ -162,7 +162,7 @@ namespace pal
        * @param scale the scale (1:scale)
        * @param svgmap stream to wrtie the svg map (need _EXPORT_MAP_ #defined to work)
        */
-      Problem* extract( int nbLayers, char **layersName, double *layersFactor,
+      Problem* extract(int nbLayers, const char **layersName, double *layersFactor,
                         double lambda_min, double phi_min,
                         double lambda_max, double phi_max,
                         double scale, std::ofstream *svgmap );
@@ -249,7 +249,7 @@ namespace pal
        *
        * @todo add symbolUnit
        */
-      Layer * addLayer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll = false );
+      Layer * addLayer(std::string lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll = false );
 
       /**
        * \brief Look for a layer
@@ -258,7 +258,7 @@ namespace pal
        *
        * @return a pointer to the layer or nullptr if the layer does not exist
        */
-      const Layer* findLayer(const char *lyrName) const;
+      Layer *findLayer(const std::string &lyrName) const;
 
 	  /**
 	   * \brief get all layers
@@ -305,8 +305,8 @@ namespace pal
        *
        * @return A list of label to display on map
        */
-      std::list<LabelPosition*> *labeller( int nbLayers,
-                                           char **layersName,
+      std::list<LabelPosition*> *labeller(int nbLayers,
+                                           const char **layersName,
                                            double *layersFactor,
                                            double scale, double bbox[4],
                                            PalStat **stat,

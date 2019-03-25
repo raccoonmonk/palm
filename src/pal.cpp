@@ -110,11 +110,11 @@ namespace pal
     return layers;
   }
 
-const Layer* Pal::findLayer( const char *lyrName ) const {
+Layer* Pal::findLayer( const std::string & lyrName ) const {
   std::lock_guard<std::mutex> guard(lyrsMutex);
   for (const auto & layer : layers) {
-    if (strcmp(layer->name, lyrName) == 0)
-    return layer.get();
+    if (layer->name == lyrName)
+      return layer.get();
   }
   return nullptr;
 }
@@ -134,7 +134,7 @@ Pal::~Pal() {
 }
 
 
-  Layer * Pal::addLayer(const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll )
+  Layer * Pal::addLayer(std::string lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, bool displayAll )
   {
     std::lock_guard<std::mutex> guard(lyrsMutex);
 
@@ -143,14 +143,10 @@ Pal::~Pal() {
     std::cout << "lyrName:" << lyrName << std::endl;
     std::cout << "nbLayers:" << layers.size() << std::endl;
 #endif
-    for (const auto & layer : layers) {
-      if ( strcmp(layer->name, lyrName ) == 0 ) {   // if layer already known
-        //There is already a layer with this name, so we just return the existing one.
-        //Sometimes the same layer is added twice (e.g. datetime split with otf-reprojection)
-        return layer.get();
-      }
+    if (auto * foundLayer = findLayer(lyrName)) {   // if layer already known
+      return foundLayer;
     }
-    Layer * lyr = new Layer(lyrName, min_scale, max_scale, arrangement, defaultPriority, obstacle, active, toLabel, this, displayAll);
+    Layer * lyr = new Layer(std::move(lyrName), min_scale, max_scale, arrangement, defaultPriority, obstacle, active, toLabel, this, displayAll);
     layers.push_back(std::unique_ptr<Layer>(lyr));
 
     return lyr;
@@ -302,7 +298,7 @@ Pal::~Pal() {
   * param phi_max north bbox
   * param scale the scale
   */
-  Problem* Pal::extract( int nbLayers, char **layersName, double *layersFactor, double lambda_min, double phi_min, double lambda_max, double phi_max, double scale, std::ofstream *svgmap )
+  Problem* Pal::extract( int nbLayers, const char **layersName, double *layersFactor, double lambda_min, double phi_min, double lambda_max, double phi_max, double scale, std::ofstream *svgmap )
   {
     // to store obstacles
     RTree<PointSet*, double, 2, double> *obstacles = new RTree<PointSet*, double, 2, double>();
@@ -374,8 +370,7 @@ Pal::~Pal() {
         {
 
           // check if this selected layers has been selected by user
-          if ( strcmp( layersName[i], layer->name ) == 0 )
-          {
+          if (layersName[i] == layer->name) {
             // check for connected features with the same label text and join them
             if ( layer->getMergeConnectedLines() )
               layer->joinConnectedFeatures();
@@ -408,7 +403,7 @@ Pal::~Pal() {
             std::cout << "     # extracted features: " << context->fFeats->size() - oldNbft << std::endl;
 #endif
             if ( context->fFeats->size() - oldNbft > 0 ) {
-              labLayers.emplace_back(layer->getName());
+              labLayers.push_back(layer->getName());
             }
             oldNbft = context->fFeats->size();
 
@@ -578,11 +573,11 @@ std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat 
   lyrsMutex.lock();
   const int nbLayers = layers.size();
 
-  char **layersName = new char*[nbLayers];
+  const char **layersName = new const char*[nbLayers];
   double *priorities = new double[nbLayers];
   int i = 0;
   for (const auto & layer : layers) {
-    layersName[i] = layer->name;
+    layersName[i] = layer->name.c_str();
     priorities[i] = layer->defaultPriority;
     i++;
   }
@@ -599,7 +594,7 @@ std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat 
   /*
    * BIG MACHINE
    */
-  std::list<LabelPosition*>* Pal::labeller( int nbLayers, char **layersName , double *layersFactor, double scale, double bbox[4], PalStat **stats, bool displayAll )
+  std::list<LabelPosition*>* Pal::labeller( int nbLayers, const char **layersName , double *layersFactor, double scale, double bbox[4], PalStat **stats, bool displayAll )
   {
 #ifdef _DEBUG_
     std::cout << "LABELLER (selection)" << std::endl;
@@ -731,11 +726,11 @@ std::list<LabelPosition*>* Pal::labeller( double scale, double bbox[4], PalStat 
     lyrsMutex.lock();
     int nbLayers = layers.size();
 
-    char **layersName = new char*[nbLayers];
+    const char **layersName = new const char*[nbLayers];
     double *priorities = new double[nbLayers];
     int i = 0;
     for (const auto & layer : layers) {
-      layersName[i] = layer->name;
+      layersName[i] = layer->name.c_str();
       priorities[i] = layer->defaultPriority;
       i++;
     }

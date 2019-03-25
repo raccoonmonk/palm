@@ -2991,7 +2991,7 @@ namespace pal
       stats->layersNbLabelledObjects[i] = 0;
     }
 
-    char *lyrName;
+    const char *lyrName;
     int k;
     for ( i = 0; i < nbft; i++ )
     {

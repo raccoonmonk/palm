@@ -177,7 +177,7 @@ namespace pal
       }
 
       /** return pointer to layer's name. used for stats */
-      char* getLayerName() const;
+      const char *getLayerName() const;
 
       /**
        * \brief get the position geographical cost

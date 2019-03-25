@@ -98,7 +98,7 @@ class  Layer {
        * @param displayAll if true, all features will be labelled even though overlaps occur
        *
        */
-      Layer( const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, Pal *pal, bool displayAll = false );
+      Layer(std::string lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, Pal *pal, bool displayAll = false );
 
       /**
        * \brief Delete the layer
@@ -123,7 +123,7 @@ class  Layer {
       /**
        * \brief get layer's name
        */
-      const char * getName();
+      const std::string & getName() const;
 
 
       /**
@@ -273,7 +273,7 @@ class  Layer {
       void joinConnectedFeatures();
 
     protected:
-      char *name; /* unique */
+      std::string name; /* unique */
 
       /** list of feature parts */
       LinkedList<FeaturePart*> *featureParts;

@@ -54,15 +54,12 @@
 namespace pal
 {
 
-  Layer::Layer(const char *lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, Pal *pal, bool displayAll )
-      :  pal( pal ), obstacle( obstacle ), active( active ),
+  Layer::Layer(std::string lyrName, double min_scale, double max_scale, Arrangement arrangement, double defaultPriority, bool obstacle, bool active, bool toLabel, Pal *pal, bool displayAll )
+      : name(std::move(lyrName)), pal( pal ), obstacle( obstacle ), active( active ),
       toLabel( toLabel ), displayAll( displayAll ),
       min_scale( min_scale ), max_scale( max_scale ),
       arrangement( arrangement ), arrangementFlags( 0 ), mode( LabelPerFeature ), mergeLines( false )
   {
-
-    this->name = new char[strlen( lyrName ) +1];
-    strcpy( this->name, lyrName );
 
     rtree = new RTree<FeaturePart*, double, 2, double>();
     hashtable = new std::unordered_map<FeatureId, Feature*>();
@@ -99,9 +96,6 @@ namespace pal
     // features in the hashtable
     features.clear();
 
-    if ( name )
-      delete[] name;
-
     delete rtree;
 
     delete hashtable;
@@ -126,8 +120,7 @@ namespace pal
     return features.size();
   }
 
-  const char *Layer::getName()
-  {
+  const std::string &Layer::getName() const {
     return name;
   }
 
