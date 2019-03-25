@@ -100,11 +100,6 @@ namespace pal
     if ( featNbLp )
       delete[] featNbLp;
 
-    for ( i = 0; i < nbLabelledLayers; i++ )
-      delete[] labelledLayersName[i];
-
-    delete[] labelledLayersName;
-
     for ( i = 0; i < all_nblp; i++ )
       delete labelpositions[i];
 
@@ -2983,15 +2978,15 @@ namespace pal
     stats->nbObjects = nbft;
     stats->nbLabelledObjects = 0;
 
-    stats->nbLayers = nbLabelledLayers;
+    stats->nbLayers = labelledLayersName.size();
     stats->layersName = new char*[stats->nbLayers];
     stats->layersNbObjects = new int[stats->nbLayers];
     stats->layersNbLabelledObjects = new int[stats->nbLayers];
 
     for ( i = 0; i < stats->nbLayers; i++ )
     {
-      stats->layersName[i] = new char[strlen( labelledLayersName[i] ) + 1];
-      strcpy( stats->layersName[i], labelledLayersName[i] );
+      stats->layersName[i] = new char[labelledLayersName[i].size() + 1];
+      strcpy( stats->layersName[i], labelledLayersName[i].c_str() );
       stats->layersNbObjects[i] = 0;
       stats->layersNbLabelledObjects[i] = 0;
     }

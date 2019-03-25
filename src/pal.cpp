@@ -360,7 +360,8 @@ Pal::~Pal() {
      * */
     int oldNbft = 0;
 
-    std::list<char*> *labLayers = new std::list<char*>();
+    std::vector<std::string> labLayers;
+    labLayers.reserve(nbLayers);
 
     lyrsMutex.lock();
     for ( i = 0; i < nbLayers; i++ )
@@ -406,11 +407,8 @@ Pal::~Pal() {
             std::cout << "     # features: " << layer->getNbFeatures() << std::endl;
             std::cout << "     # extracted features: " << context->fFeats->size() - oldNbft << std::endl;
 #endif
-            if ( context->fFeats->size() - oldNbft > 0 )
-            {
-              char *name = new char[strlen( layer->getName() ) +1];
-              strcpy( name, layer->getName() );
-              labLayers->push_back( name );
+            if ( context->fFeats->size() - oldNbft > 0 ) {
+              labLayers.emplace_back(layer->getName());
             }
             oldNbft = context->fFeats->size();
 
@@ -423,15 +421,7 @@ Pal::~Pal() {
     delete context;
     lyrsMutex.unlock();
 
-    prob->nbLabelledLayers = labLayers->size();
-    prob->labelledLayersName = new char*[prob->nbLabelledLayers];
-    for ( i = 0; i < prob->nbLabelledLayers; i++ )
-    {
-      prob->labelledLayersName[i] = labLayers->front();
-      labLayers->pop_front();
-    }
-
-    delete labLayers;
+    prob->labelledLayersName = std::move(labLayers);
 
     if ( fFeats->size() == 0 )
     {

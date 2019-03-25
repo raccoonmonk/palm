@@ -31,6 +31,7 @@
 #define _PROBLEM_H
 
 #include <list>
+#include <vector>
 #include "pal.h"
 #include "rtree.hpp"
 
@@ -97,14 +98,9 @@ namespace pal
     private:
 
       /**
-       * How many layers are lebelled ?
-       */
-      int nbLabelledLayers;
-
-      /**
        * Names of the labelled layers
        */
-      char **labelledLayersName;
+      std::vector<std::string> labelledLayersName;
 
       /**
        * # active candidates (remaining after reduce())
