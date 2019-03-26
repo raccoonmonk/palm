@@ -210,11 +210,10 @@ namespace pal
     if ( label_x < 0 || label_y < 0 )
       return false;
 
-    modMutex.lock();
+    std::lock_guard<std::mutex> guard(modMutex);
 
     if ( hashtable->find(geom_id) != hashtable->end() )
     {
-      modMutex.unlock();
       //A feature with this id already exists. Don't throw an exception as sometimes,
       //the same feature is added twice (dateline split with otf-reprojection)
       return false;
@@ -257,7 +256,6 @@ namespace pal
     LinkedList <const GEOSGeometry*> *simpleGeometries = unmulti( the_geom );
     if ( simpleGeometries == NULL ) // unmulti() failed?
     {
-      modMutex.unlock();
       throw InternalException::UnknownGeometry();
     }
 
@@ -276,7 +274,6 @@ namespace pal
 
       if ( type != GEOS_POINT && type != GEOS_LINESTRING && type != GEOS_POLYGON )
       {
-        modMutex.unlock();
         throw InternalException::UnknownGeometry();
       }
 
@@ -324,8 +321,6 @@ namespace pal
     delete simpleGeometries;
 
     userGeom->releaseGeosGeometry( the_geom );
-
-    modMutex.unlock();
 
     // if using only biggest parts...
     if (( mode == LabelPerFeature || f->fixedPosition() ) && biggest_part != NULL )
