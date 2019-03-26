@@ -188,7 +188,7 @@ namespace pal
           {
             dx = x[nbPoints-1] - x[0];
             dy = y[nbPoints-1] - y[0];
-            di = sqrt( dx * dx + dy * dy );
+            di = std::hypot(dx, dy);
           }
           else
           {

@@ -584,10 +584,9 @@ namespace pal
 
       // Label is bigger than line ...
       if ( l < 0 )
-        birdfly = sqrt(( x[nbPoints-1] - x[0] ) * ( x[nbPoints-1] - x[0] )
-                       + ( y[nbPoints-1] - y[0] ) * ( y[nbPoints-1] - y[0] ) );
+        birdfly = std::hypot(x[nbPoints-1] - x[0], y[nbPoints-1] - y[0]);
       else
-        birdfly = sqrt(( ex - bx ) * ( ex - bx ) + ( ey - by ) * ( ey - by ) );
+        birdfly = std::hypot(ex - bx, ey - by);
 
       cost = birdfly / xrm;
       if ( cost > 0.98 )
@@ -607,9 +606,9 @@ namespace pal
         alpha = 0.0;
       }
       else
-        alpha = atan2( ey - by, ex - bx );
+        alpha = std::atan2( ey - by, ex - bx );
 
-      beta = alpha + M_PI / 2;
+      beta = alpha + M_PI_2;
 
 #ifdef _DEBUG_FULL_
       std::cout << "  Create new label" << std::endl;
@@ -617,7 +616,7 @@ namespace pal
       if ( f->layer->arrangement == P_LINE )
       {
         // find out whether the line direction for this candidate is from right to left
-        bool isRightToLeft = ( alpha > M_PI / 2 || alpha <= -M_PI / 2 );
+        bool isRightToLeft = ( alpha > M_PI_2 || alpha <= -M_PI_2 );
         // meaning of above/below may be reversed if using line position dependent orientation
         // and the line has right-to-left direction
         bool reversed = (( flags & FLAG_MAP_ORIENTATION ) ? isRightToLeft : false );
@@ -940,7 +939,7 @@ namespace pal
       while (tmp) {
         if ( tmp != slp ) // not first?
         {
-          diff = fabs( tmp->getAlpha() - angle_last );
+          diff = std::abs(tmp->getAlpha() - angle_last);
           if ( diff > 2*M_PI ) diff -= 2 * M_PI;
           diff = std::min( diff, 2 * M_PI - diff ); // difference 350 deg is actually just 10 deg...
           angle_diff += diff;
@@ -965,7 +964,7 @@ namespace pal
 
 
       // average angle is calculated with respect to periodicity of angles
-      double angle_avg = atan2( sin_avg / f->labelInfo->char_num(), cos_avg / f->labelInfo->char_num() );
+      double angle_avg = std::atan2( sin_avg / f->labelInfo->char_num(), cos_avg / f->labelInfo->char_num() );
       // displacement
       if ( flags & FLAG_ABOVE_LINE )
         positions->push_back( _createCurvedCandidate( slp, angle_avg, f->distlabel + f->labelInfo->label_height / 2 ) );
@@ -1051,7 +1050,7 @@ namespace pal
       double dy;
       int bbid;
       double beta;
-      double diago = sqrt( xrm * xrm / 4.0 + yrm * yrm / 4 );
+      double diago = std::hypot(xrm, yrm) / 2;
       double rx, ry;
       CHullBox **boxes = new CHullBox*[shapes_final->size()];
       j = 0;
