@@ -177,7 +177,7 @@ namespace pal
       }
 
       /** return pointer to layer's name. used for stats */
-      const char *getLayerName() const;
+      const std::string &getLayerName() const;
 
       /**
        * \brief get the position geographical cost

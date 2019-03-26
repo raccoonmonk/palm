@@ -2971,8 +2971,6 @@ namespace pal
 
   PalStat * Problem::getStats()
   {
-    int i, j;
-
     PalStat *stats = new PalStat();
 
     stats->nbObjects = nbft;
@@ -2983,40 +2981,31 @@ namespace pal
     stats->layersNbObjects = new int[stats->nbLayers];
     stats->layersNbLabelledObjects = new int[stats->nbLayers];
 
-    for ( i = 0; i < stats->nbLayers; i++ )
-    {
+    for (int i = 0; i < stats->nbLayers; ++i) {
       stats->layersName[i] = new char[labelledLayersName[i].size() + 1];
       strcpy( stats->layersName[i], labelledLayersName[i].c_str() );
       stats->layersNbObjects[i] = 0;
       stats->layersNbLabelledObjects[i] = 0;
     }
 
-    const char *lyrName;
-    int k;
-    for ( i = 0; i < nbft; i++ )
-    {
-      lyrName = labelpositions[featStartId[i]]->getLayerName();
-      k = -1;
-      for ( j = 0; j < stats->nbLayers; j++ )
-      {
-        if ( strcmp( lyrName, stats->layersName[j] ) == 0 )
-        {
+    for (int i = 0; i < nbft; ++i) {
+      const auto & lyrName = labelpositions[featStartId[i]]->getLayerName();
+      int k = -1;
+      for (int j = 0; j < stats->nbLayers; ++j) {
+        if (lyrName == stats->layersName[j]) {
           k = j;
           break;
         }
       }
-      if ( k != -1 )
-      {
+      if ( k != -1 ) {
         stats->layersNbObjects[k]++;
         if ( sol->s[i] >= 0 )
         {
           stats->layersNbLabelledObjects[k]++;
           stats->nbLabelledObjects++;
         }
-      }
-      else
-      {
-        std::cerr << "Error unknown layers while computing stats: " << lyrName << std::endl;
+      } else {
+        std::cerr << "Error unknown layers while computing stats: " << lyrName << '\n';
       }
     }
 

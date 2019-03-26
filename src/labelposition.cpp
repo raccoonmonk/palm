@@ -373,9 +373,9 @@ namespace pal
     }
   }
 
-  const char* LabelPosition::getLayerName() const
+  const std::string & LabelPosition::getLayerName() const
   {
-    return feature->getLayer()->name.c_str();
+    return feature->getLayer()->name;
   }
 
   bool LabelPosition::costShrink( void *l, void *r )
