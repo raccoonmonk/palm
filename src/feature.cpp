@@ -742,7 +742,7 @@ namespace pal
   return true;
 }
 
-  LabelPosition* FeaturePart::curvedPlacementAtOffset( PointSet* path_positions, double* path_distances, int orientation, int index, double distance )
+  LabelPosition* FeaturePart::curvedPlacementAtOffset( PointSet* path_positions, const std::vector<double> & path_distances, int orientation, int index, double distance )
   {
     // Check that the given distance is on the given index and find the correct index and distance if not
     while ( distance < 0 && index > 1 )
@@ -923,27 +923,22 @@ namespace pal
     if ( f->labelInfo == NULL || f->labelInfo->char_num() == 0 )
       return 0;
 
+    if (mapShape->nbPoints == 0)
+      return 0;
     // distance calculation
-    double* path_distances = new double[mapShape->nbPoints];
+    std::vector<double> path_distances(mapShape->nbPoints);
     double total_distance = 0;
-    double old_x = -1.0, old_y = -1.0;
-    for ( int i = 0; i < mapShape->nbPoints; i++ )
-    {
-      if ( i == 0 )
-        path_distances[i] = 0;
-      else
-        path_distances[i] = std::hypot(old_x - mapShape->x[i], old_y - mapShape->y[i]);
+    double old_x = mapShape->x[0];
+    double old_y = mapShape->y[0];
+    for (int i = 1; i < mapShape->nbPoints; i++) {
+      path_distances[i] = std::hypot(old_x - mapShape->x[i], old_y - mapShape->y[i]);
       old_x = mapShape->x[i];
       old_y = mapShape->y[i];
-
       total_distance += path_distances[i];
     }
 
-    if ( total_distance == 0 )
-    {
-      delete[] path_distances;
+    if (total_distance == 0)
       return 0;
-    }
 
     LinkedList<LabelPosition*> *positions = new LinkedList<LabelPosition*> ( ptrLPosCompare );
     double delta = std::max( f->labelInfo->label_height, total_distance / 10.0 );
@@ -1013,7 +1008,6 @@ namespace pal
       ( *lPos )[i] = positions->pop_front();
     }
     delete positions;
-    delete[] path_distances;
 
     return nbp;
   }

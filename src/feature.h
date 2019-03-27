@@ -206,7 +206,7 @@ namespace pal
        */
       int setPositionForLine( double scale, LabelPosition ***lPos, PointSet *mapShape, double delta_width );
 
-      LabelPosition* curvedPlacementAtOffset( PointSet* path_positions, double* path_distances,
+      LabelPosition* curvedPlacementAtOffset(PointSet* path_positions, const std::vector<double> &path_distances,
                                               int orientation, int index, double distance );
 
       /**
