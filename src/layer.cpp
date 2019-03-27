@@ -64,8 +64,6 @@ namespace pal
     rtree = new RTree<FeaturePart*, double, 2, double>();
     hashtable = new std::unordered_map<FeatureId, Feature*>();
 
-    connectedHashtable = new HashTable< LinkedList<FeaturePart*>* > ( 5391 );
-
     if ( defaultPriority < 0.0001 )
       this->defaultPriority = 0.0001;
     else if ( defaultPriority > 1.0 )
@@ -89,9 +87,6 @@ namespace pal
       delete featureParts;
 
     }
-
-    // this hashtable and list should be empty if they still exist
-    delete connectedHashtable;
 
     // features in the hashtable
     features.clear();
@@ -203,7 +198,7 @@ namespace pal
 
 
 
-  bool Layer::registerFeature( FeatureId geom_id, PalGeometry *userGeom, double label_x, double label_y, const char* labelText,
+  bool Layer::registerFeature( FeatureId geom_id, PalGeometry *userGeom, double label_x, double label_y, const std::string & labelText,
                                double labelPosX, double labelPosY, bool fixedPos, double angle, bool fixedAngle,
                                int xQuadOffset, int yQuadOffset, double xOffset, double yOffset, bool alwaysShow )
   {
@@ -340,7 +335,7 @@ namespace pal
     return !first_feat; // true if we've added something
   }
 
-  void Layer::addFeaturePart( FeaturePart* fpart, const char* labelText )
+  void Layer::addFeaturePart( FeaturePart* fpart, const std::string & labelText )
   {
     double bmin[2];
     double bmax[2];
@@ -353,23 +348,18 @@ namespace pal
     rtree->Insert( bmin, bmax, fpart );
 
     // add to hashtable with equally named feature parts
-    if ( mergeLines && labelText )
-    {
-      LinkedList< FeaturePart*>** lstPtr = connectedHashtable->find( labelText );
-      LinkedList< FeaturePart*>* lst;
-      if ( lstPtr == NULL )
-      {
+    if (mergeLines && !labelText.empty()) {
+      LinkedList< FeaturePart*>* lst = nullptr;
+      auto findIter = connectedHashtable.find(labelText);
+      if (findIter == std::end(connectedHashtable)) {
         // entry doesn't exist yet
-        lst = new LinkedList<FeaturePart*>( ptrFeaturePartCompare );
-        connectedHashtable->insertItem( labelText, lst );
-
+        lst = new LinkedList<FeaturePart*>(ptrFeaturePartCompare);
+        connectedHashtable.insert({labelText, lst});
         connectedTexts.push_back(labelText);
+      } else {
+        lst = findIter->second;
       }
-      else
-      {
-        lst = *lstPtr;
-      }
-      lst->push_back( fpart ); // add to the list
+      lst->push_back(fpart); // add to the list
     }
   }
 
@@ -395,10 +385,10 @@ namespace pal
     // go through all label texts
     for (const auto & labelText : connectedTexts) {
       //std::cerr << "JOIN: " << labelText << std::endl;
-      LinkedList<FeaturePart*>** partsPtr = connectedHashtable->find(labelText.c_str());
-      if ( !partsPtr )
+      auto findIter = connectedHashtable.find(labelText);
+      if (findIter != std::end(connectedHashtable))
         continue; // shouldn't happen
-      LinkedList<FeaturePart*>* parts = *partsPtr;
+      LinkedList<FeaturePart*>* parts = findIter->second;
 
       // go one-by-one part, try to merge
       while ( parts->size() )
@@ -431,12 +421,9 @@ namespace pal
 
       // we're done processing feature parts with this particular label text
       delete parts;
-      *partsPtr = NULL;
     }
 
     // we're done processing connected fetures
-    delete connectedHashtable;
-    connectedHashtable = NULL;
     connectedTexts.clear();
   }
 

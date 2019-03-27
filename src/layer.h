@@ -112,7 +112,7 @@ class  Layer {
       bool isScaleValid( double scale );
 
       /** add newly creted feature part into r tree and to the list */
-      void addFeaturePart( FeaturePart* fpart, const char* labelText = NULL );
+      void addFeaturePart( FeaturePart* fpart, const std::string & labelText);
 
     public:
       /**
@@ -260,8 +260,8 @@ class  Layer {
        *
        * @return true on success (i.e. valid geometry)
        */
-      bool registerFeature( FeatureId geom_id, PalGeometry *userGeom, double label_x = -1, double label_y = -1,
-                            const char* labelText = NULL, double labelPosX = 0.0, double labelPosY = 0.0,
+      bool registerFeature(FeatureId geom_id, PalGeometry *userGeom, double label_x = -1, double label_y = -1,
+                            const std::string &labelText = NULL, double labelPosX = 0.0, double labelPosY = 0.0,
                             bool fixedPos = false, double angle = 0.0, bool fixedAngle = false,
                             int xQuadOffset = 0, int yQuadOffset = 0, double xOffset = 0.0, double yOffset = 0.0,
                             bool alwaysShow = false );
@@ -305,7 +305,7 @@ class  Layer {
       RTree<FeaturePart*, double, 2, double, 8, 4> *rtree;
       std::unordered_map<FeatureId, Feature*> *hashtable;
 
-      HashTable< LinkedList<FeaturePart*>* > * connectedHashtable;
+      std::unordered_map<std::string, LinkedList<FeaturePart*>*> connectedHashtable;
     std::vector<std::string> connectedTexts;
     std::mutex modMutex;
 };
