@@ -354,7 +354,7 @@ namespace pal
     for (const auto & labelText : connectedTexts) {
       //std::cerr << "JOIN: " << labelText << std::endl;
       auto findIter = connectedHashtable.find(labelText);
-      if (findIter != std::end(connectedHashtable))
+      if (findIter == std::end(connectedHashtable))
         continue; // shouldn't happen
       LinkedList<FeaturePart*>* parts = findIter->second;
 
