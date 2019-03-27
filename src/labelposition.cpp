@@ -61,7 +61,7 @@ namespace pal
     while ( this->alpha < 0 )
       this->alpha += 2 * M_PI;
 
-    register double beta = this->alpha + ( M_PI / 2 );
+    register double beta = this->alpha + ( M_PI_2 );
 
     double dx1, dx2, dy1, dy2;
 
@@ -87,7 +87,7 @@ namespace pal
 
     // upside down ? (curved labels are always correct)
     if ( feature->getLayer()->getArrangement() != P_CURVED &&
-         this->alpha > M_PI / 2 && this->alpha <= 3*M_PI / 2 )
+         this->alpha > M_PI_2 && this->alpha <= 3*M_PI_2 )
     {
       bool uprightLabel = false;
 

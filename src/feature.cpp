@@ -350,7 +350,7 @@ namespace pal
 
     // uncomment for Wolff 2 position model test on RailwayStation
     //if (nbp==2)
-    //   beta = M_PI/2;
+    //   beta = M_PI_2;
 
     /*double distlabel =  unit_convert( this->distlabel,
                                      pal::PIXEL,
@@ -360,7 +360,7 @@ namespace pal
     double lx, ly; /* label pos */
 
     /* various alpha */
-    double a90  = M_PI / 2;
+    double a90  = M_PI_2;
     double a180 = M_PI;
     double a270 = a180 + a90;
     double a360 = 2 * M_PI;
@@ -393,7 +393,7 @@ namespace pal
 
     *lPos = new LabelPosition *[nbp];
 
-    for ( i = 0, alpha = M_PI / 4; i < nbp; i++, alpha += beta )
+    for ( i = 0, alpha = M_PI_4; i < nbp; i++, alpha += beta )
     {
       lx = x;
       ly = y;
@@ -856,7 +856,7 @@ namespace pal
       while ( render_angle >= 2*M_PI ) render_angle -= 2 * M_PI;
       while ( render_angle < 0 ) render_angle += 2 * M_PI;
 
-      if ( render_angle > M_PI / 2 && render_angle < 1.5*M_PI )
+      if ( render_angle > M_PI_2 && render_angle < 1.5*M_PI )
         upside_down_char_count++;
     }
     // END FOR
@@ -1132,18 +1132,18 @@ namespace pal
           }
           else if ( box->length > 1.5*xrm && box->width > 1.5*xrm )
           {
-            if ( box->alpha <= M_PI / 4 )
+            if ( box->alpha <= M_PI_4 )
             {
               alpha = box->alpha;
             }
             else
             {
-              alpha = box->alpha - M_PI / 2;
+              alpha = box->alpha - M_PI_2;
             }
           }
           else if ( box->length > box->width )
           {
-            alpha = box->alpha - M_PI / 2;
+            alpha = box->alpha - M_PI_2;
           }
           else
           {
@@ -1173,8 +1173,8 @@ namespace pal
             for ( py = py0; py <= box->length; py += dy )
             {
 
-              rx = cos( box->alpha ) * px + cos( box->alpha - M_PI / 2 ) * py;
-              ry = sin( box->alpha ) * px + sin( box->alpha - M_PI / 2 ) * py;
+              rx = cos( box->alpha ) * px + cos( box->alpha - M_PI_2 ) * py;
+              ry = sin( box->alpha ) * px + sin( box->alpha - M_PI_2 ) * py;
 
               rx += box->x[0];
               ry += box->y[0];
