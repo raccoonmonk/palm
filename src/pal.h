@@ -285,7 +285,7 @@ namespace pal
        *
        * @return A list of label to display on map
        */
-      std::list<LabelPosition*> *labeller( double scale, double bbox[4], PalStat **stats, bool displayAll );
+      std::list<LabelPosition *> labeller( double scale, double bbox[4], PalStat **stats, bool displayAll );
 
 
       /**
@@ -305,7 +305,7 @@ namespace pal
        *
        * @return A list of label to display on map
        */
-      std::list<LabelPosition*> *labeller(int nbLayers,
+      std::list<LabelPosition *> labeller(int nbLayers,
                                            const char **layersName,
                                            double *layersFactor,
                                            double scale, double bbox[4],
@@ -315,7 +315,7 @@ namespace pal
 
       Problem* extractProblem( double scale, double bbox[4] );
 
-      std::list<LabelPosition*>* solveProblem( Problem* prob, bool displayAll );
+      std::list<LabelPosition *> solveProblem( Problem* prob, bool displayAll );
 
       /**
        * \brief Set map resolution

@@ -39,7 +39,7 @@
 #include <cfloat>
 #include <ctime>
 #include <list>
-#include <limits.h> //for INT_MAX
+#include <climits> //for INT_MAX
 
 #include "pal.h"
 #include "palstat.h"
@@ -2935,35 +2935,29 @@ namespace pal
     return l1->getWidth() * l1->getHeight() > l2->getWidth() * l2->getHeight();
   }
 
-  std::list<LabelPosition*> * Problem::getSolution( bool returnInactive )
+  std::list<LabelPosition *> Problem::getSolution( bool returnInactive )
   {
+    std::list<LabelPosition*> solList;
 
-    int i;
-    std::list<LabelPosition*> *solList = new std::list<LabelPosition*>();
-
-    if ( nbft == 0 )
-    {
+    if (nbft == 0) {
       return solList;
     }
 
-    for ( i = 0; i < nbft; i++ )
-    {
-      if ( sol->s[i] != -1 )
-      {
-        solList->push_back( labelpositions[sol->s[i]] ); // active labels
+    for (int i = 0; i < nbft; ++i) {
+      if ( sol->s[i] != -1 ) {
+        solList.push_back( labelpositions[sol->s[i]] ); // active labels
       }
       else if ( returnInactive
                 || labelpositions[featStartId[i]]->getFeaturePart()->getLayer()->getDisplayAll()
                 || labelpositions[featStartId[i]]->getFeaturePart()->getAlwaysShow() )
       {
-        solList->push_back( labelpositions[featStartId[i]] ); // unplaced label
+        solList.push_back( labelpositions[featStartId[i]] ); // unplaced label
       }
     }
 
     // if features collide, order by size, so smaller ones appear on top
-    if ( returnInactive )
-    {
-      solList->sort( compareLabelArea );
+    if (returnInactive) {
+        solList.sort(compareLabelArea);
     }
 
     return solList;

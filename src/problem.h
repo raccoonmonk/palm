@@ -195,7 +195,7 @@ namespace pal
        */
       void chain_search();
 
-      std::list<LabelPosition*> * getSolution( bool returnInactive );
+      std::list<LabelPosition*> getSolution(bool returnInactive);
 
       PalStat * getStats();
 
