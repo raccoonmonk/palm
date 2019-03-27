@@ -51,7 +51,6 @@ namespace pal
   {
     public:
       struct CharacterInfo {
-        unsigned short chr;
         double width;
       };
 
@@ -107,7 +106,8 @@ namespace pal
                                double labelPosX, double labelPosY, bool fixedPos, double angle, bool fixedAngle,
                                int xQuadOffset, int yQuadOffset, double xOffset, double yOffset, bool alwaysShow );
 
-      void setLabelInfo( LabelInfo* info ) { labelInfo = info; }
+      /// @note takes ownership
+      void setLabelInfo( LabelInfo* info ) { labelInfo.reset(info); }
       void setDistLabel( double dist ) { distlabel = dist; }
       //Set label position of the feature to fixed x/y values
       void setFixedPosition( double x, double y ) { fixedPos = true; fixedPosX = x; fixedPosY = y;}
@@ -124,7 +124,7 @@ namespace pal
       double label_x;
       double label_y;
       double distlabel = 0;
-      LabelInfo* labelInfo = nullptr; // optional
+      std::unique_ptr<LabelInfo> labelInfo; // optional
       FeatureId uid;
 
       bool fixedPos = false; //true in case of fixed position (only 1 candidate position with cost 0)
@@ -281,7 +281,6 @@ namespace pal
       double getLabelHeight() const { return f->label_y; }
       void setLabelDistance( double dist ) { f->distlabel = dist; }
       double getLabelDistance() const { return f->distlabel; }
-      void setLabelInfo( LabelInfo* info ) { f->labelInfo = info; }
 
       bool getFixedRotation() { return f->fixedRotation; }
       double getLabelAngle() { return f->fixedAngle; }
