@@ -76,10 +76,36 @@ namespace pal
   class  Feature
   {
       friend class FeaturePart;
+      friend class Layer;
 
     public:
-      Feature( Layer* l, FeatureId id, PalGeometry* userG, double lx, double ly );
+      Feature(FeatureId id, PalGeometry* userG, double lx, double ly);
       ~Feature();
+      /**
+       * \brief create a feature
+       *
+       * @param geom_id unique identifier
+       * @param label_x label width
+       * @param label_y label height
+       * @param userGeom user's geometry that implements the PalGeometry interface
+       * @param labelPosX x position of the label (in case of fixed label position)
+       * @param labelPosY y position of the label (in case of fixed label position)
+       * @param fixedPos true if a single fixed position for this label is needed
+       * @param angle fixed angle (in radians) to rotate the label
+       * @param fixedAngle whether to use provided fixed angle
+       * @param xQuadOffset move label to quadrant: left, don't move, right (-1, 0, 1)
+       * @param yQuadOffset move label to quadrant: down, don't move, up (-1, 0, 1)
+       * @param xOffset map unit (+/-) to x-offset the label
+       * @param yOffset map unit (+/-) to y-offset the label
+       * @param alwaysShow whether to skip priority and always show the label (causes overlapping)
+       *
+       * @throws PalException::FeatureExists
+       *
+       * @return nullptr if the parameters are invalid
+       */
+      static std::unique_ptr<Feature> create(FeatureId geom_id, PalGeometry *userGeom, double label_x, double label_y,
+                               double labelPosX, double labelPosY, bool fixedPos, double angle, bool fixedAngle,
+                               int xQuadOffset, int yQuadOffset, double xOffset, double yOffset, bool alwaysShow );
 
       void setLabelInfo( LabelInfo* info ) { labelInfo = info; }
       void setDistLabel( double dist ) { distlabel = dist; }
@@ -93,7 +119,7 @@ namespace pal
       void setAlwaysShow( bool bl ) { alwaysShow = bl; }
 
     protected:
-      Layer *layer;
+      Layer *layer = nullptr;
       PalGeometry *userGeom;
       double label_x;
       double label_y;

@@ -45,11 +45,7 @@
  *
  */
 
-namespace pal
-{
-
-  template <class Type> class LinkedList;
-
+namespace pal {
   class Layer;
   class LabelPosition;
   class PalStat;

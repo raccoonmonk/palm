@@ -240,30 +240,13 @@ class  Layer {
       /**
        * \brief register a feature in the layer
        *
-       * @param geom_id unique identifier
-       * @param label_x label width
-       * @param label_y label height
-       * @param userGeom user's geometry that implements the PalGeometry interface
-       * @param labelPosX x position of the label (in case of fixed label position)
-       * @param labelPosY y position of the label (in case of fixed label position)
-       * @param fixedPos true if a single fixed position for this label is needed
-       * @param angle fixed angle (in radians) to rotate the label
-       * @param fixedAngle whether to use provided fixed angle
-       * @param xQuadOffset move label to quadrant: left, don't move, right (-1, 0, 1)
-       * @param yQuadOffset move label to quadrant: down, don't move, up (-1, 0, 1)
-       * @param xOffset map unit (+/-) to x-offset the label
-       * @param yOffset map unit (+/-) to y-offset the label
-       * @param alwaysShow whether to skip priority and always show the label (causes overlapping)
-       *
        * @throws PalException::FeatureExists
        *
        * @return true on success (i.e. valid geometry)
+       *
+       * @note takes ownership of the feature
        */
-      bool registerFeature(FeatureId geom_id, PalGeometry *userGeom, double label_x = -1, double label_y = -1,
-                            const std::string &labelText = NULL, double labelPosX = 0.0, double labelPosY = 0.0,
-                            bool fixedPos = false, double angle = 0.0, bool fixedAngle = false,
-                            int xQuadOffset = 0, int yQuadOffset = 0, double xOffset = 0.0, double yOffset = 0.0,
-                            bool alwaysShow = false );
+      bool registerFeature(std::unique_ptr<Feature> feature, const std::string &labelText);
 
       /** return pointer to feature or NULL if doesn't exist */
       Feature* getFeature(FeatureId id );
@@ -298,7 +281,7 @@ class  Layer {
       LabelMode mode;
       bool mergeLines;
 
-      UpsideDownLabels upsidedownLabels;
+      UpsideDownLabels upsidedownLabels = UpsideDownLabels::Upright;
 
       // indexes (spatial and id)
       RTree<FeaturePart*, double, 2, double, 8, 4> *rtree;

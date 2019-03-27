@@ -193,15 +193,11 @@ namespace pal
       defaultPriority = priority;
   }
 
-
-
-  bool Layer::registerFeature( FeatureId geom_id, PalGeometry *userGeom, double label_x, double label_y, const std::string & labelText,
-                               double labelPosX, double labelPosY, bool fixedPos, double angle, bool fixedAngle,
-                               int xQuadOffset, int yQuadOffset, double xOffset, double yOffset, bool alwaysShow )
-  {
-    if ( label_x < 0 || label_y < 0 )
+  bool Layer::registerFeature(std::unique_ptr<Feature> feature, const std::string & labelText) {
+    if (!feature)
       return false;
 
+    const auto & geom_id = feature->uid;
     std::lock_guard<std::mutex> guard(modMutex);
 
     if (hashtable.find(geom_id) != hashtable.end()) {
@@ -210,40 +206,15 @@ namespace pal
       return false;
     }
 
-    // Split MULTI GEOM and Collection in simple geometries
-    const GEOSGeometry *the_geom = userGeom->getGeosGeometry();
-
-    auto f = std::unique_ptr<Feature>(new Feature( this, geom_id, userGeom, label_x, label_y ));
-    if ( fixedPos )
-    {
-      f->setFixedPosition( labelPosX, labelPosY );
-    }
-    if ( xQuadOffset != 0 || yQuadOffset != 0 )
-    {
-      f->setQuadOffset( xQuadOffset, yQuadOffset );
-    }
-    if ( xOffset != 0.0 || yOffset != 0.0 )
-    {
-      f->setPosOffset( xOffset, yOffset );
-    }
-    if ( fixedAngle )
-    {
-      f->setFixedAngle( angle );
-    }
-    // use layer-level defined rotation, but not if position fixed
-    if ( !fixedPos && angle != 0.0 )
-    {
-      f->setFixedAngle( angle );
-    }
-
-    f->setAlwaysShow( alwaysShow );
+    feature->layer = this;
 
     bool first_feat = true;
 
     double geom_size = -1, biggest_size = -1;
-    FeaturePart* biggest_part = NULL;
+    FeaturePart* biggest_part = nullptr;
 
     // break the (possibly multi-part) geometry into simple geometries
+    const GEOSGeometry *the_geom = feature->userGeom->getGeosGeometry();
     LinkedList <const GEOSGeometry*> *simpleGeometries = unmulti( the_geom );
     if ( simpleGeometries == NULL ) // unmulti() failed?
     {
@@ -268,7 +239,7 @@ namespace pal
         throw InternalException::UnknownGeometry();
       }
 
-      FeaturePart* fpart = new FeaturePart( f.get(), geom );
+      FeaturePart* fpart = new FeaturePart(feature.get(), geom);
 
       // ignore invalid geometries
       if (( type == GEOS_LINESTRING && fpart->nbPoints < 2 ) ||
@@ -311,10 +282,10 @@ namespace pal
     }
     delete simpleGeometries;
 
-    userGeom->releaseGeosGeometry( the_geom );
+    feature->userGeom->releaseGeosGeometry( the_geom );
 
     // if using only biggest parts...
-    if (( mode == LabelPerFeature || f->fixedPosition() ) && biggest_part != NULL )
+    if (( mode == LabelPerFeature || feature->fixedPosition() ) && biggest_part != NULL )
     {
       addFeaturePart( biggest_part, labelText );
       first_feat = false;
@@ -324,11 +295,12 @@ namespace pal
 
     // add feature to layer if we have added something
     if (!first_feat) {
-      hashtable.insert({geom_id, f.get()});
-      features.push_back(std::move(f));
+      hashtable.insert({geom_id, feature.get()});
+      features.push_back(std::move(feature));
     }
 
     return !first_feat; // true if we've added something
+
   }
 
   void Layer::addFeaturePart( FeaturePart* fpart, const std::string & labelText )

@@ -54,9 +54,8 @@
 
 namespace pal
 {
-  Feature::Feature(Layer* l, FeatureId geom_id, PalGeometry* userG, double lx, double ly )
-      : layer(l)
-      , userGeom(userG)
+  Feature::Feature(FeatureId geom_id, PalGeometry* userG, double lx, double ly )
+      : userGeom(userG)
       , label_x(lx)
       , label_y(ly)
       , distlabel(0)
@@ -64,6 +63,34 @@ namespace pal
   { }
 
   Feature::~Feature() { }
+
+  std::unique_ptr<Feature> Feature::create(FeatureId geom_id, PalGeometry *userGeom, double label_x, double label_y, double labelPosX, double labelPosY, bool fixedPos, double angle, bool fixedAngle, int xQuadOffset, int yQuadOffset, double xOffset, double yOffset, bool alwaysShow)
+  {
+    if ( label_x < 0 || label_y < 0 )
+      return nullptr;
+
+    // Split MULTI GEOM and Collection in simple geometries
+    auto f = std::unique_ptr<Feature>(new Feature(geom_id, userGeom, label_x, label_y));
+    if ( fixedPos ) {
+      f->setFixedPosition( labelPosX, labelPosY );
+    }
+    if ( xQuadOffset != 0 || yQuadOffset != 0 ) {
+      f->setQuadOffset( xQuadOffset, yQuadOffset );
+    }
+    if ( xOffset != 0.0 || yOffset != 0.0 ) {
+      f->setPosOffset( xOffset, yOffset );
+    }
+    if ( fixedAngle ) {
+      f->setFixedAngle( angle );
+    }
+    // use layer-level defined rotation, but not if position fixed
+    if ( !fixedPos && angle != 0.0 ) {
+      f->setFixedAngle( angle );
+    }
+
+    f->setAlwaysShow( alwaysShow );
+    return f;
+  }
 
   FeaturePart::FeaturePart( Feature *feat, const GEOSGeometry* geom )
       : f( feat ), nbHoles( 0 ), holes( NULL )
