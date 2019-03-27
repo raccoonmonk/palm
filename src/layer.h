@@ -303,7 +303,7 @@ class  Layer {
 
       // indexes (spatial and id)
       RTree<FeaturePart*, double, 2, double, 8, 4> *rtree;
-      std::unordered_map<FeatureId, Feature*> *hashtable;
+      std::unordered_map<FeatureId, Feature*> hashtable;
 
       std::unordered_map<std::string, LinkedList<FeaturePart*>*> connectedHashtable;
     std::vector<std::string> connectedTexts;

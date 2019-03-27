@@ -60,9 +60,7 @@ namespace pal
       min_scale( min_scale ), max_scale( max_scale ),
       arrangement( arrangement ), arrangementFlags( 0 ), mode( LabelPerFeature ), mergeLines( false )
   {
-
     rtree = new RTree<FeaturePart*, double, 2, double>();
-    hashtable = new std::unordered_map<FeatureId, Feature*>();
 
     if ( defaultPriority < 0.0001 )
       this->defaultPriority = 0.0001;
@@ -93,13 +91,13 @@ namespace pal
 
     delete rtree;
 
-    delete hashtable;
+    hashtable.clear();
   }
 
   Feature* Layer::getFeature(FeatureId id)
   {
-    auto findIter = hashtable->find(id);
-    return (findIter != hashtable->end()) ? findIter->second : nullptr;
+    auto findIter = hashtable.find(id);
+    return (findIter != hashtable.end()) ? findIter->second : nullptr;
   }
 
 
@@ -207,8 +205,7 @@ namespace pal
 
     std::lock_guard<std::mutex> guard(modMutex);
 
-    if ( hashtable->find(geom_id) != hashtable->end() )
-    {
+    if (hashtable.find(geom_id) != hashtable.end()) {
       //A feature with this id already exists. Don't throw an exception as sometimes,
       //the same feature is added twice (dateline split with otf-reprojection)
       return false;
@@ -328,7 +325,7 @@ namespace pal
 
     // add feature to layer if we have added something
     if (!first_feat) {
-      hashtable->insert( {geom_id, f.get()} );
+      hashtable.insert({geom_id, f.get()});
       features.push_back(std::move(f));
     }
 
