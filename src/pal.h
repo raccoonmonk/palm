@@ -30,9 +30,10 @@
 #ifndef _PAL_H
 #define _PAL_H
 
-#include <list>
 #include <iostream>
 #include <mutex>
+#include <list>
+#include <vector>
 #include <memory>
 
 /**
@@ -285,7 +286,7 @@ namespace pal
        *
        * @return A list of label to display on map
        */
-      std::list<LabelPosition *> labeller( double scale, double bbox[4], PalStat **stats, bool displayAll );
+      std::vector<LabelPosition *> labeller( double scale, double bbox[4], PalStat **stats, bool displayAll );
 
 
       /**
@@ -305,7 +306,7 @@ namespace pal
        *
        * @return A list of label to display on map
        */
-      std::list<LabelPosition *> labeller(int nbLayers,
+      std::vector<LabelPosition *> labeller(int nbLayers,
                                            const char **layersName,
                                            double *layersFactor,
                                            double scale, double bbox[4],
@@ -315,7 +316,7 @@ namespace pal
 
       Problem* extractProblem( double scale, double bbox[4] );
 
-      std::list<LabelPosition *> solveProblem( Problem* prob, bool displayAll );
+      std::vector<LabelPosition *> solveProblem( Problem* prob, bool displayAll );
 
       /**
        * \brief Set map resolution

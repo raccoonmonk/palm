@@ -39,6 +39,7 @@
 #include <cfloat>
 #include <ctime>
 #include <list>
+#include <algorithm>
 #include <climits> //for INT_MAX
 
 #include "pal.h"
@@ -2935,14 +2936,15 @@ namespace pal
     return l1->getWidth() * l1->getHeight() > l2->getWidth() * l2->getHeight();
   }
 
-  std::list<LabelPosition *> Problem::getSolution( bool returnInactive )
+  std::vector<LabelPosition *> Problem::getSolution( bool returnInactive )
   {
-    std::list<LabelPosition*> solList;
+    std::vector<LabelPosition*> solList;
 
     if (nbft == 0) {
       return solList;
     }
 
+    solList.reserve(nbft);
     for (int i = 0; i < nbft; ++i) {
       if ( sol->s[i] != -1 ) {
         solList.push_back( labelpositions[sol->s[i]] ); // active labels
@@ -2957,7 +2959,7 @@ namespace pal
 
     // if features collide, order by size, so smaller ones appear on top
     if (returnInactive) {
-        solList.sort(compareLabelArea);
+      std::sort(std::begin(solList), std::end(solList), compareLabelArea);
     }
 
     return solList;

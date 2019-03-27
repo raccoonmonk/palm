@@ -571,7 +571,7 @@ Pal::~Pal() {
     return prob;
   }
 
-std::list<LabelPosition*> Pal::labeller( double scale, double bbox[4], PalStat **stats, bool displayAll ) {
+std::vector<LabelPosition*> Pal::labeller( double scale, double bbox[4], PalStat **stats, bool displayAll ) {
   lyrsMutex.lock();
   const int nbLayers = layers.size();
 
@@ -585,7 +585,7 @@ std::list<LabelPosition*> Pal::labeller( double scale, double bbox[4], PalStat *
   }
   lyrsMutex.unlock();
 
-  std::list<LabelPosition*> solution = labeller(nbLayers, layersName, priorities, scale, bbox, stats, displayAll);
+  std::vector<LabelPosition*> solution = labeller(nbLayers, layersName, priorities, scale, bbox, stats, displayAll);
 
   delete[] layersName;
   delete[] priorities;
@@ -596,7 +596,7 @@ std::list<LabelPosition*> Pal::labeller( double scale, double bbox[4], PalStat *
   /*
    * BIG MACHINE
    */
-  std::list<LabelPosition*> Pal::labeller( int nbLayers, const char **layersName , double *layersFactor, double scale, double bbox[4], PalStat **stats, bool displayAll )
+  std::vector<LabelPosition*> Pal::labeller( int nbLayers, const char **layersName , double *layersFactor, double scale, double bbox[4], PalStat **stats, bool displayAll )
   {
 #ifdef _DEBUG_
     std::cout << "LABELLER (selection)" << std::endl;
@@ -694,7 +694,7 @@ std::list<LabelPosition*> Pal::labeller( double scale, double bbox[4], PalStat *
     //prob->post_optimization();
 
 
-    std::list<LabelPosition*> solution = prob->getSolution(displayAll);
+    std::vector<LabelPosition*> solution = prob->getSolution(displayAll);
 
     if ( stats )
       *stats = prob->getStats();
@@ -746,7 +746,7 @@ std::list<LabelPosition*> Pal::labeller( double scale, double bbox[4], PalStat *
     return prob;
   }
 
-  std::list<LabelPosition*> Pal::solveProblem( Problem* prob, bool displayAll ) {
+  std::vector<LabelPosition*> Pal::solveProblem( Problem* prob, bool displayAll ) {
     if (prob == NULL)
       return {};
 
