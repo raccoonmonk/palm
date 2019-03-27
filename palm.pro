@@ -10,7 +10,6 @@ HEADERS += \
     src/costcalculator.h \
     src/feature.h \
     src/geomfunction.h \
-    src/hashtable.hpp \
     src/internalexception.h \
     src/labelposition.h \
     src/layer.h \

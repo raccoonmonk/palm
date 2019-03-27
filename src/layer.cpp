@@ -45,7 +45,6 @@
 #include "internalexception.h"
 
 #include "linkedlist.hpp"
-#include "hashtable.hpp"
 
 #include "feature.h"
 #include "geomfunction.h"

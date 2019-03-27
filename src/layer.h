@@ -45,7 +45,6 @@ namespace pal
 
   template <class Type> class LinkedList;
   template <class Type> class Cell;
-  template <typename Data> class HashTable;
 
   template<class DATATYPE, class ELEMTYPE, int NUMDIMS, class ELEMTYPEREAL, int TMAXNODES, int TMINNODES> class RTree;
 
