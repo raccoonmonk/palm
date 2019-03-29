@@ -149,59 +149,36 @@ namespace pal
 
 
 
-  void Problem::reduce()
-  {
+  void Problem::reduce() {
+    std::vector<bool> ok(nblp, false);
 
-    int i;
-    int j;
-    int k;
-
-    int counter = 0;
-
-    int lpid;
-
-    bool *ok = new bool[nblp];
     bool run = true;
-
-    for ( i = 0; i < nblp; i++ )
-      ok[i] = false;
-
-
-    double amin[2];
-    double amax[2];
-    LabelPosition *lp;
-    LabelPosition *lp2;
-
-    while ( run )
-    {
+    int counter = 0;
+    while (run) {
       run = false;
-      for ( i = 0; i < nbft; i++ )
-      {
+      for (int i = 0; i < nbft; i++) {
         // ok[i] = true;
-        for ( j = 0; j < featNbLp[i]; j++ )  // foreach candidate
-        {
+        for (int j = 0; j < featNbLp[i]; j++) {  // foreach candidate
           if ( !ok[featStartId[i] + j] )
           {
-            if (( lp = labelpositions[featStartId[i] + j] )->getNumOverlaps() == 0 ) // if candidate has no overlap
-            {
+            LabelPosition *  lp = labelpositions[featStartId[i] + j];
+            if (lp->getNumOverlaps() == 0) { // if candidate has no overlap
               run = true;
               ok[featStartId[i] + j] = true;
               // 1) remove worse candidates from candidates
               // 2) update nb_overlaps
               counter += featNbLp[i] - j - 1;
 
-              for ( k = j + 1; k < featNbLp[i]; k++ )
-              {
-
-                lpid = featStartId[i] + k;
+              for (int k = j + 1; k < featNbLp[i]; k++) {
+                int lpid = featStartId[i] + k;
                 ok[lpid] = true;
-                lp2 = labelpositions[lpid];
-
-                lp2->getBoundingBox( amin, amax );
-
+                LabelPosition * lp2 = labelpositions[lpid];
+                std::array<double, 2> amin {0, 0};
+                std::array<double, 2> amax {0, 0};
+                lp2->getBoundingBox(amin.data(), amax.data());
                 nbOverlap -= lp2->getNumOverlaps();
-                candidates->Search( amin, amax, LabelPosition::removeOverlapCallback, ( void* ) lp2 );
-                lp2->removeFromIndex( candidates );
+                candidates->Search(amin.data(), amax.data(), LabelPosition::removeOverlapCallback, ( void* )lp2);
+                lp2->removeFromIndex(candidates);
               }
 
               //lp->removeFromIndex(candidates);
@@ -218,7 +195,6 @@ namespace pal
 #ifdef _VERBOSE_
     std::cout << "problem reduce to " << nblp << " candidates which makes " << nbOverlap << " overlaps"  << std::endl;
 #endif
-    delete[] ok;
   }
 
   /**

@@ -346,22 +346,17 @@ namespace pal
     return feature;
   }
 
-  void LabelPosition::getBoundingBox( double amin[2], double amax[2] ) const
-  {
-    if ( nextPart )
-    {
+  void LabelPosition::getBoundingBox( double amin[2], double amax[2] ) const {
+    if (nextPart) {
       //std::cout << "using next part" <<
       nextPart->getBoundingBox( amin, amax );
-    }
-    else
-    {
+    } else {
       amin[0] = DBL_MAX;
       amax[0] = -DBL_MAX;
       amin[1] = DBL_MAX;
       amax[1] = -DBL_MAX;
     }
-    for ( int c = 0; c < 4; c++ )
-    {
+    for (int c = 0; c < 4; c++) {
       if ( x[c] < amin[0] )
         amin[0] = x[c];
       if ( x[c] > amax[0] )

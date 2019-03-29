@@ -165,8 +165,6 @@ namespace pal
     public:
       Problem();
 
-      //Problem(char *lorena_file, bool displayAll);
-
       ~Problem();
 
       /////////////////
