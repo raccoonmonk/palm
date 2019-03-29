@@ -215,16 +215,12 @@ namespace pal
 
     // break the (possibly multi-part) geometry into simple geometries
     const GEOSGeometry *the_geom = feature->userGeom->getGeosGeometry();
-    LinkedList <const GEOSGeometry*> *simpleGeometries = unmulti( the_geom );
-    if ( simpleGeometries == NULL ) // unmulti() failed?
-    {
+    auto simpleGeometries = unmulti(the_geom);
+    if (simpleGeometries.empty()) { // unmulti() failed?
       throw InternalException::UnknownGeometry();
     }
 
-    while ( simpleGeometries->size() > 0 )
-    {
-      const GEOSGeometry* geom = simpleGeometries->pop_front();
-
+    for (auto * geom : simpleGeometries) {
       // ignore invalid geometries (e.g. polygons with self-intersecting rings)
       if ( GEOSisValid( geom ) != 1 ) // 0=invalid, 1=valid, 2=exception
       {
@@ -269,8 +265,8 @@ namespace pal
           delete biggest_part; // safe with NULL part
           biggest_part = fpart;
         } else {
-    delete fpart;
-  }
+          delete fpart;
+        }
         continue; // don't add the feature part now, do it later
         // TODO: we should probably add also other parts to act just as obstacles
       }
@@ -280,7 +276,6 @@ namespace pal
 
       first_feat = false;
     }
-    delete simpleGeometries;
 
     feature->userGeom->releaseGeosGeometry( the_geom );
 

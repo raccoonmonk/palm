@@ -515,12 +515,6 @@ Pal::~Pal() {
     prob->labelpositions = new LabelPosition*[prob->nblp];
     //prob->feat = new int[prob->nblp];
 
-#ifdef _DEBUG_FULL_
-    std::cout << "problem malloc'd" << std::endl;
-#endif
-
-
-    j = 0;
     while ( fFeats->size() > 0 ) // foreach feature
     {
       feat = fFeats->pop_front();
@@ -533,7 +527,6 @@ Pal::~Pal() {
         lp->validateCost();
 
         prob->labelpositions[idlp] = lp;
-        //prob->feat[idlp] = j;
 
         lp->getBoundingBox( amin, amax );
 
@@ -545,7 +538,6 @@ Pal::~Pal() {
         std::cout << "Nb overlap for " << idlp << "/" << prob->nblp - 1 << " : " << lp->getNumOverlaps() << std::endl;
 #endif
       }
-      j++;
       delete[] feat->lPos;
       delete feat;
     }

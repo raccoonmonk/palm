@@ -31,6 +31,7 @@
 #include <geos_c.h>
 
 #include <sstream>
+#include <queue>
 
 #include <iostream>
 #include <cfloat>
@@ -170,42 +171,35 @@ inline bool ptrGeomEq( const GEOSGeometry *l, const GEOSGeometry *r ) {
   return l == r;
 }
 
-  LinkedList<const GEOSGeometry*> * unmulti( const GEOSGeometry *the_geom ) {
-    LinkedList<const GEOSGeometry*> *queue = new  LinkedList<const GEOSGeometry*> ( ptrGeomEq );
-    LinkedList<const GEOSGeometry*> *final_queue = new  LinkedList<const GEOSGeometry*> ( ptrGeomEq );
+  std::vector<const GEOSGeometry*> unmulti( const GEOSGeometry *the_geom ) {
+    auto queue = std::queue<const GEOSGeometry*>();
+    auto final_queue = std::vector<const GEOSGeometry*>();
 
-    const GEOSGeometry *geom;
+    queue.push(the_geom);
 
-    queue->push_back( the_geom );
-    int nGeom;
-    int i;
-
-    while ( queue->size() > 0 ) {
-      geom = queue->pop_front();
-      switch ( GEOSGeomTypeId( geom ) )
-      {
+    while (!queue.empty()) {
+      const GEOSGeometry *geom = queue.front();
+      queue.pop();
+      switch (GEOSGeomTypeId(geom)) {
         case GEOS_MULTIPOINT:
         case GEOS_MULTILINESTRING:
         case GEOS_MULTIPOLYGON:
-        case GEOS_GEOMETRYCOLLECTION:
-          nGeom = GEOSGetNumGeometries( geom );
-          for ( i = 0; i < nGeom; i++ )
-          {
-            queue->push_back( GEOSGetGeometryN( geom, i ) );
+        case GEOS_GEOMETRYCOLLECTION: {
+          int nGeom = GEOSGetNumGeometries(geom);
+          for (int i = 0; i < nGeom; i++) {
+            queue.push(GEOSGetGeometryN(geom, i));
           }
           break;
+        }
         case GEOS_POINT:
         case GEOS_LINESTRING:
         case GEOS_POLYGON:
-          final_queue->push_back( geom );
+          final_queue.push_back(geom);
           break;
         default:
-          delete final_queue;
-          final_queue = nullptr;
+          final_queue.clear();
       }
     }
-    delete queue;
-
     return final_queue;
   }
 
