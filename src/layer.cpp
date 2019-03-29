@@ -67,23 +67,16 @@ namespace pal
       this->defaultPriority = 1.0;
     else
       this->defaultPriority = defaultPriority;
-
-    featureParts = new LinkedList<FeaturePart*> ( ptrFeaturePartCompare );
   }
 
   Layer::~Layer()
   {
     std::lock_guard<std::mutex> guard(modMutex);
 
-    if ( featureParts )
-    {
-      while ( featureParts->size() )
-      {
-        delete featureParts->pop_front();
-      }
-      delete featureParts;
-
+    for (auto * part : featureParts) {
+      delete part;
     }
+    featureParts.clear();
 
     // features in the hashtable
     features.clear();
@@ -220,6 +213,7 @@ namespace pal
       throw InternalException::UnknownGeometry();
     }
 
+    featureParts.reserve(simpleGeometries.size());
     for (auto * geom : simpleGeometries) {
       // ignore invalid geometries (e.g. polygons with self-intersecting rings)
       if ( GEOSisValid( geom ) != 1 ) // 0=invalid, 1=valid, 2=exception
@@ -305,7 +299,7 @@ namespace pal
     fpart->getBoundingBox( bmin, bmax );
 
     // add to list of layer's feature parts
-    featureParts->push_back( fpart );
+    featureParts.push_back(fpart);
 
     // add to r-tree for fast spatial access
     rtree->Insert( bmin, bmax, fpart );

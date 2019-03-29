@@ -258,7 +258,7 @@ class  Layer {
       std::string name; /* unique */
 
       /** list of feature parts */
-      LinkedList<FeaturePart*> *featureParts;
+      std::vector<FeaturePart*> featureParts;
 
       /** list of features - for deletion */
       std::vector<std::unique_ptr<Feature>> features;
