@@ -74,7 +74,7 @@ namespace pal
 
 template<typename T>
 bool is_close_to_zero(T value) {
-  static_assert(std::is_floating_point<T>::value);
+  static_assert(std::is_floating_point<T>::value, "only for floating point");
   return std::abs(value) < std::numeric_limits<decltype(value)>::epsilon();
 }
 
