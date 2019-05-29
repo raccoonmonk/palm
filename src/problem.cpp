@@ -41,6 +41,7 @@
 #include <list>
 #include <algorithm>
 #include <climits> //for INT_MAX
+#include <array>
 
 #include "pal.h"
 #include "palstat.h"
